@@ -72,7 +72,7 @@ public abstract class InGameHudMixin extends DrawableHelper
     private int scaledHeight;
 
     @Shadow
-    public abstract TextRenderer getFontRenderer();
+    public abstract TextRenderer getTextRenderer();
 
     @Inject( method = "renderStatusEffectOverlay", at = @At( "HEAD" ), cancellable = true )
     public void renderStatusEffectOverlay( MatrixStack matrices, final CallbackInfo ci )
@@ -118,7 +118,7 @@ public abstract class InGameHudMixin extends DrawableHelper
                         l += (Topbar.getInstance().getEffectIconSize() + 2);
                     }
 
-                    RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+                    RenderSystem.clearColor(1.0F, 1.0F, 1.0F, 1.0F);
                     float f = 1.0F;
                     if ( statusEffectInstance.isAmbient() )
                     {
@@ -140,8 +140,8 @@ public abstract class InGameHudMixin extends DrawableHelper
                     int finalK = k;
                     int finalL = l;
                     list.add(() -> {
-                        this.client.getTextureManager().bindTexture(sprite.getAtlas().getId());
-                        RenderSystem.color4f(1.0F, 1.0F, 1.0F, finalF);
+                        this.client.getTextureManager().bindTexture(sprite.getAtlasId());
+                        RenderSystem.clearColor(1.0F, 1.0F, 1.0F, finalF);
                         drawSprite(matrices, finalK + 1, finalL + 1, this.getZOffset(), Topbar.getInstance().getEffectIconSize(), Topbar.getInstance().getEffectIconSize(), sprite);
                     });
                 }
@@ -174,32 +174,32 @@ public abstract class InGameHudMixin extends DrawableHelper
             String time = new SimpleDateFormat("HH:mm:ss").format(Calendar.getInstance().getTime());
 
             fill(matrices, 0, 0, this.scaledWidth, 10, Topbar.getInstance().getColorBackground());
-            this.getFontRenderer().getClass();
+            this.getTextRenderer().getClass();
 
             if ( Topbar.getInstance().isFpsShow() )
             {
-                offsetLeft += this.getFontRenderer().getWidth(Formatting.strip(fps + TopbarClient.getInstance().strSplitter));
+                offsetLeft += this.getTextRenderer().getWidth(Formatting.strip(fps + TopbarClient.getInstance().strSplitter));
             }
 
             if ( Topbar.getInstance().isTimeShow() )
             {
-                offsetRight += this.getFontRenderer().getWidth(" | 00:00:00");
+                offsetRight += this.getTextRenderer().getWidth(" | 00:00:00");
             }
 
-            this.getFontRenderer().draw(matrices, TopbarClient.getInstance().strTopLeft, offsetLeft, 1, 0xfff0f0f0);
-            this.getFontRenderer().draw(matrices, TopbarClient.getInstance().strTopRight, this.scaledWidth - this.getFontRenderer().getWidth(Formatting.strip(TopbarClient.getInstance().strTopRight)) - offsetRight, 1, 0xfff0f0f0);
+            this.getTextRenderer().draw(matrices, TopbarClient.getInstance().strTopLeft, offsetLeft, 1, 0xfff0f0f0);
+            this.getTextRenderer().draw(matrices, TopbarClient.getInstance().strTopRight, this.scaledWidth - this.getTextRenderer().getWidth(Formatting.strip(TopbarClient.getInstance().strTopRight)) - offsetRight, 1, 0xfff0f0f0);
             if ( Topbar.getInstance().isFpsShow() )
             {
-                this.getFontRenderer().draw(matrices, fps + TopbarClient.getInstance().strSplitter, 2, 1, Topbar.getInstance().getFpsColor());
+                this.getTextRenderer().draw(matrices, fps + TopbarClient.getInstance().strSplitter, 2, 1, Topbar.getInstance().getFpsColor());
             }
             if ( Topbar.getInstance().isTimeShow() )
             {
-                this.getFontRenderer().draw(matrices, TopbarClient.getInstance().strSplitter + Formatting.RESET + time, this.scaledWidth - offsetRight, 1, Topbar.getInstance().getTimeColor());
+                this.getTextRenderer().draw(matrices, TopbarClient.getInstance().strSplitter + Formatting.RESET + time, this.scaledWidth - offsetRight, 1, Topbar.getInstance().getTimeColor());
             }
 
-            this.getFontRenderer().draw(matrices, TopbarClient.getInstance().strPlotName, this.scaledWidth - this.getFontRenderer().getWidth(Formatting.strip(TopbarClient.getInstance().strPlotName)) - 2, this.scaledHeight - 19, 0xfff0f0f0);
+            this.getTextRenderer().draw(matrices, TopbarClient.getInstance().strPlotName, this.scaledWidth - this.getTextRenderer().getWidth(Formatting.strip(TopbarClient.getInstance().strPlotName)) - 2, this.scaledHeight - 19, 0xfff0f0f0);
 
-            this.getFontRenderer().draw(matrices, TopbarClient.getInstance().strPlotOwner, this.scaledWidth - this.getFontRenderer().getWidth(Formatting.strip(TopbarClient.getInstance().strPlotOwner)) - 2, this.scaledHeight - 10, 0xfff0f0f0);
+            this.getTextRenderer().draw(matrices, TopbarClient.getInstance().strPlotOwner, this.scaledWidth - this.getTextRenderer().getWidth(Formatting.strip(TopbarClient.getInstance().strPlotOwner)) - 2, this.scaledHeight - 10, 0xfff0f0f0);
 
 
             //this.getFontRenderer().draw(matrices, TopbarClient.getInstance().DEBUGTEXT, 2, 20, Topbar.getInstance().getTimeColor());

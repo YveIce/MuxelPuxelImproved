@@ -49,8 +49,8 @@ public class ClientLoginNetworkHandlerMixin
     private ClientConnection connection;
 
 
-    @Inject( method = "onLoginSuccess", at = @At( "HEAD" ), cancellable = true )
-    public void onLoginSuccess( LoginSuccessS2CPacket packet, final CallbackInfo callbackInfo )
+    @Inject( method = "onSuccess", at = @At( "HEAD" ), cancellable = true )
+    public void onSuccess( LoginSuccessS2CPacket packet, final CallbackInfo callbackInfo )
     {
         boolean isMixel = (connection != null && connection.getAddress().toString().matches(".*45\\.135\\.203\\.18.*"));
         TopbarClient.getInstance().setisMixel(isMixel);

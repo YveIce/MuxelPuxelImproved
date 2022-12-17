@@ -42,13 +42,7 @@ import java.util.Deque;
 public abstract class ChatHudMixin
 {
     @Shadow
-    @Final
-    private final Deque<Text> messageQueue = Queues.newArrayDeque();
-    @Shadow
     private final long lastMessageAddedTime = 0L;
-    @Shadow
-    @Final
-    private MinecraftClient client;
 
     @Shadow
     public abstract boolean isChatFocused();

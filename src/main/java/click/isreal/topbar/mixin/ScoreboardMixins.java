@@ -61,48 +61,7 @@ public class ScoreboardMixins
         String text = stripStr(player).trim();
         String displayName = objective.getDisplayName().getString().trim();
 
-        if ( displayName.matches(".*WesternWars.*") )
-        {
-            TopbarClient.getInstance().world = TopbarClient.mpWorld.WW;
-            if ( text.matches("(.*)Sheriff(.*)") )
-            {
-                TopbarClient.getInstance().strRolle = Formatting.BLUE + "Sheriff";
-            }
-            else if ( text.matches("(.*)Verbrecher(.*)") )
-            {
-                TopbarClient.getInstance().strRolle = Formatting.GOLD + "Verbrecher";
-            }
-            else if ( text.matches("(.*)Kopfgeldjäger(.*)") )
-            {
-                TopbarClient.getInstance().strRolle = Formatting.RED + "Kopfgeldjäger";
-            }
-            else if ( text.matches("(.*)Bankkonto:(.*)") )
-            {
-                String tmpMoney = text.replaceAll("[^0-9,]", "").replaceAll(",", ".");
-                tmpMoney = Topbar.getInstance().moneyformat.format(Double.parseDouble(tmpMoney));
-                TopbarClient.getInstance().strMoney = Formatting.YELLOW + tmpMoney;
-            }
-            else if ( text.matches("(.*)Geldbeutel:(.*)") )
-            {
-                String tmpMoney = text.replaceAll("[^0-9,]", "").replaceAll(",", ".");
-                tmpMoney = Topbar.getInstance().moneyformat.format(Double.parseDouble(tmpMoney));
-                TopbarClient.getInstance().strMoneyPocket = Formatting.GOLD + tmpMoney;
-            }
-            else if ( text.matches("(.*)Kills:(.*)") )
-            {
-                TopbarClient.getInstance().strKills = Formatting.GREEN + text.replaceAll("[^0-9]", "") + " \u2694";
-            }
-            else if ( text.matches("(.*)Tode:(.*)") )
-            {
-                TopbarClient.getInstance().strDeath = Formatting.RED + text.replaceAll("[^0-9]", "") + " \u2020";
-            }
-            else if ( text.matches("(.*)K\\/D:(.*)") )
-            {
-                TopbarClient.getInstance().strKD = Formatting.YELLOW + text.replaceAll("[^0-9.]", "") + " \u2300";
-            }
-
-        }
-        else if ( displayName.matches(".*KnockbackFFA.*") )
+        if ( displayName.matches(".*KnockbackFFA.*") )
         {
             TopbarClient.getInstance().world = TopbarClient.mpWorld.KFFA;
             TopbarClient.getInstance().strKffaTime = Formatting.DARK_AQUA + " [" + displayName.replaceAll("-[0-9]", "").replaceAll("[^0-9\\:]", "") + "]";

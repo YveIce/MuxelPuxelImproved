@@ -138,7 +138,7 @@ public class discordRPC
         }
         else
         {
-            DiscordRichPresence.Builder presence = new DiscordRichPresence.Builder("made by Yve" + "\u2122");
+            DiscordRichPresence.Builder presence = new DiscordRichPresence.Builder("Version 1.19.3 by Yve and Klysma" + "\u2122");
             presence.setDetails("using an MC-Mod ");
             presence.setBigImage("logolurkklinik", "Visit DonnerPrinzessin @CB-Donner");
             presence.setStartTimestamps(timeStampStart);

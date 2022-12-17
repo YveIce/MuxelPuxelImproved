@@ -33,9 +33,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.hud.BackgroundHelper;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
@@ -248,24 +247,24 @@ public class TopbarClient implements ClientModInitializer
         if ( FabricLoader.getInstance().isModLoaded("cloth-config2") )
         {
 
-            ConfigBuilder builder = ConfigBuilder.create().setParentScreen(parent).setTitle(new LiteralText(Formatting.LIGHT_PURPLE + "" + Formatting.BOLD + "YVE\u2122" + Formatting.WHITE + " - Topbar Mod \u2620"));
-            ConfigCategory general = builder.getOrCreateCategory(new LiteralText("YveTopbar"));
+            ConfigBuilder builder = ConfigBuilder.create().setParentScreen(parent).setTitle(Text.literal(Formatting.LIGHT_PURPLE + "" + Formatting.BOLD + "YVE\u2122" + Formatting.WHITE + " - Topbar Mod \u2620"));
+            ConfigCategory general = builder.getOrCreateCategory(Text.literal("YveTopbar"));
             ConfigEntryBuilder entryBuilder = builder.entryBuilder();
 
             general.setBackground(Identifier.tryParse("minecraft:textures/block/dragon_egg.png"));
-            general.addEntry(entryBuilder.startBooleanToggle(new LiteralText("Streamer-Mode"), Topbar.getInstance().isStreamerMode()).setDefaultValue(false).setTooltip(new LiteralText("If enabled, your ingame money value would be hidden on topbar.")).setSaveConsumer(Topbar.getInstance()::setStreamerMode).build());
-            general.addEntry(entryBuilder.startColorField(new LiteralText("Color Background"), Topbar.getInstance().getColorBackground()).setDefaultValue(0xf0000000).setAlphaMode(true).setTooltip(new LiteralText("Background color of the topbar in Hex. (#AARRGGBB)")).setSaveConsumer(Topbar.getInstance()::setColorBackground).build());
-            general.addEntry(entryBuilder.startIntSlider(new LiteralText("Effect Icon Size"), Topbar.getInstance().getEffectIconSize(), 6, 32).setDefaultValue(10).setTooltip(new LiteralText("Scales the Effect Icon Size.")).setSaveConsumer(Topbar.getInstance()::setEffectIconSize).build());
-            general.addEntry(entryBuilder.startColorField(new LiteralText("Color Effect Icon Positive"), Topbar.getInstance().getEffectColorPositive()).setDefaultValue(0xff00ff00).setAlphaMode(true).setTooltip(new LiteralText("Sets the backgroundcolor of positive effect icon in Hex. (#AARRGGBB)")).setSaveConsumer(Topbar.getInstance()::setEffectColorPositive).build());
-            general.addEntry(entryBuilder.startColorField(new LiteralText("Color Effect Icon Negative"), Topbar.getInstance().getEffectColorNegative()).setDefaultValue(0xffff0000).setAlphaMode(true).setTooltip(new LiteralText("Sets the backgroundcolor of negative effect icon in Hex. (#AARRGGBB)")).setSaveConsumer(Topbar.getInstance()::setEffectColorNegative).build());
-            general.addEntry(entryBuilder.startBooleanToggle(new LiteralText("Show FPS"), Topbar.getInstance().isFpsShow()).setDefaultValue(true).setTooltip(new LiteralText("If enabled, FPS is shown left-most on the topbar.")).setSaveConsumer(Topbar.getInstance()::setFpsShow).build());
-            general.addEntry(entryBuilder.startColorField(new LiteralText("Color FPS"), Topbar.getInstance().getFpsColor()).setDefaultValue(0xff808080).setAlphaMode(true).setTooltip(new LiteralText("Sets the textcolor of FPS in Hex. (#AARRGGBB)")).setSaveConsumer(Topbar.getInstance()::setFpsColor).build());
-            general.addEntry(entryBuilder.startBooleanToggle(new LiteralText("Show Time"), Topbar.getInstance().isTimeShow()).setDefaultValue(true).setTooltip(new LiteralText("If enabled, Time of your computer is shown right-most on the topbar.")).setSaveConsumer(Topbar.getInstance()::setTimeShow).build());
-            general.addEntry(entryBuilder.startColorField(new LiteralText("Color Time"), Topbar.getInstance().getTimeColor()).setDefaultValue(0xff808080).setAlphaMode(true).setTooltip(new LiteralText("Sets the textcolor of Time in Hex. (#AARRGGBB)")).setSaveConsumer(Topbar.getInstance()::setTimeColor).build());
-            general.addEntry(entryBuilder.startBooleanToggle(new LiteralText("Prevent sending false commands"), Topbar.getInstance().isPreventFalseCommands()).setDefaultValue(true).setTooltip(new LiteralText("Prevents sending Chat-Messages starting with '7' or 't/'. As this are the most common typo errors.")).setSaveConsumer(Topbar.getInstance()::setPreventFalseCommands).build());
-            general.addEntry(entryBuilder.startColorField(new LiteralText("Color Loading Screen"), Topbar.getInstance().getLoadscreenColor()).setDefaultValue(BackgroundHelper.ColorMixer.getArgb(255, 239, 50, 61)).setAlphaMode(true).setTooltip(new LiteralText("Sets the background color of the loadingscreen(the one with the mojang logo) in Hex. (#AARRGGBB)")).setSaveConsumer(Topbar.getInstance()::setLoadscreenColor).build());
-            general.addEntry(entryBuilder.startBooleanToggle(new LiteralText("Enable Discord"), Topbar.getInstance().isDiscordEnabled()).setDefaultValue(true).setTooltip(new LiteralText("If enabled and Discord app is running, your profil will show that you are playing on MixelPixel.")).setSaveConsumer(Topbar.getInstance()::setDiscordEnabled).build());
-            general.addEntry(entryBuilder.startBooleanToggle(new LiteralText("Enable Tool break warning"), Topbar.getInstance().isBreakwarnEnabled()).setDefaultValue(true).setTooltip(new LiteralText("If enabled, a warning is displayed if the tool being used is about to be destroyed.")).setSaveConsumer(Topbar.getInstance()::setBreakwarnEnabled).build());
+            general.addEntry(entryBuilder.startBooleanToggle(Text.literal("Streamer-Mode"), Topbar.getInstance().isStreamerMode()).setDefaultValue(false).setTooltip(Text.literal("If enabled, your ingame money value would be hidden on topbar.")).setSaveConsumer(Topbar.getInstance()::setStreamerMode).build());
+            general.addEntry(entryBuilder.startColorField(Text.literal("Color Background"), Topbar.getInstance().getColorBackground()).setDefaultValue(0xf0000000).setAlphaMode(true).setTooltip(Text.literal("Background color of the topbar in Hex. (#AARRGGBB)")).setSaveConsumer(Topbar.getInstance()::setColorBackground).build());
+            general.addEntry(entryBuilder.startIntSlider(Text.literal("Effect Icon Size"), Topbar.getInstance().getEffectIconSize(), 6, 32).setDefaultValue(10).setTooltip(Text.literal("Scales the Effect Icon Size.")).setSaveConsumer(Topbar.getInstance()::setEffectIconSize).build());
+            general.addEntry(entryBuilder.startColorField(Text.literal("Color Effect Icon Positive"), Topbar.getInstance().getEffectColorPositive()).setDefaultValue(0xff00ff00).setAlphaMode(true).setTooltip(Text.literal("Sets the backgroundcolor of positive effect icon in Hex. (#AARRGGBB)")).setSaveConsumer(Topbar.getInstance()::setEffectColorPositive).build());
+            general.addEntry(entryBuilder.startColorField(Text.literal("Color Effect Icon Negative"), Topbar.getInstance().getEffectColorNegative()).setDefaultValue(0xffff0000).setAlphaMode(true).setTooltip(Text.literal("Sets the backgroundcolor of negative effect icon in Hex. (#AARRGGBB)")).setSaveConsumer(Topbar.getInstance()::setEffectColorNegative).build());
+            general.addEntry(entryBuilder.startBooleanToggle(Text.literal("Show FPS"), Topbar.getInstance().isFpsShow()).setDefaultValue(true).setTooltip(Text.literal("If enabled, FPS is shown left-most on the topbar.")).setSaveConsumer(Topbar.getInstance()::setFpsShow).build());
+            general.addEntry(entryBuilder.startColorField(Text.literal("Color FPS"), Topbar.getInstance().getFpsColor()).setDefaultValue(0xff808080).setAlphaMode(true).setTooltip(Text.literal("Sets the textcolor of FPS in Hex. (#AARRGGBB)")).setSaveConsumer(Topbar.getInstance()::setFpsColor).build());
+            general.addEntry(entryBuilder.startBooleanToggle(Text.literal("Show Time"), Topbar.getInstance().isTimeShow()).setDefaultValue(true).setTooltip(Text.literal("If enabled, Time of your computer is shown right-most on the topbar.")).setSaveConsumer(Topbar.getInstance()::setTimeShow).build());
+            general.addEntry(entryBuilder.startColorField(Text.literal("Color Time"), Topbar.getInstance().getTimeColor()).setDefaultValue(0xff808080).setAlphaMode(true).setTooltip(Text.literal("Sets the textcolor of Time in Hex. (#AARRGGBB)")).setSaveConsumer(Topbar.getInstance()::setTimeColor).build());
+            general.addEntry(entryBuilder.startBooleanToggle(Text.literal("Prevent sending false commands"), Topbar.getInstance().isPreventFalseCommands()).setDefaultValue(true).setTooltip(Text.literal("Prevents sending Chat-Messages starting with '7' or 't/'. As this are the most common typo errors.")).setSaveConsumer(Topbar.getInstance()::setPreventFalseCommands).build());
+            general.addEntry(entryBuilder.startColorField(Text.literal("Color Loading Screen"), Topbar.getInstance().getLoadscreenColor()).setTooltip(Text.literal("Sets the background color of the loadingscreen(the one with the mojang logo) in Hex. (#AARRGGBB)")).setSaveConsumer(Topbar.getInstance()::setLoadscreenColor).build());
+            general.addEntry(entryBuilder.startBooleanToggle(Text.literal("Enable Discord"), Topbar.getInstance().isDiscordEnabled()).setDefaultValue(true).setTooltip(Text.literal("If enabled and Discord app is running, your profil will show that you are playing on MixelPixel.")).setSaveConsumer(Topbar.getInstance()::setDiscordEnabled).build());
+            general.addEntry(entryBuilder.startBooleanToggle(Text.literal("Enable Tool break warning"), Topbar.getInstance().isBreakwarnEnabled()).setDefaultValue(true).setTooltip(Text.literal("If enabled, a warning is displayed if the tool being used is about to be destroyed.")).setSaveConsumer(Topbar.getInstance()::setBreakwarnEnabled).build());
 
             return builder.build();
         }

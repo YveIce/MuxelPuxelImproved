@@ -34,8 +34,6 @@ import java.util.Deque;
 @Mixin( ChatHud.class )
 public interface ChatHudAccessor
 {
-    @Accessor
-    Deque<Text> getMessageQueue();
 
     @Accessor
     int getScrolledLines();
