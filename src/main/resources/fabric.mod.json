@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "id": "topbar",
+  "version": "${version}",
+  "name": "Yve-Topbar",
+  "description": "Replaces the scoreboard on mixelpixel.net in the most cases with a beautiful and simple bar on the top of the screen. ",
+  "authors": ["Yve"],
+  "contact": {},
+  "license": "MIT",
+  "icon": "assets/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "click.isreal.topbar.client.TopbarClient"
+    ],
+    "main": [
+      "click.isreal.topbar.Topbar"
+    ],
+    "modmenu": [
+      "click.isreal.topbar.ModMenuApiImplementation"
+    ]
+  },
+  "mixins": [
+    "topbar.mixins.json"
+  ],
+  "depends": {
+    "cloth-config2": ">=4.12.41",
+    "fabricloader": ">=0.12.9",
+    "fabric": "*",
+    "minecraft": ">=1.16.5"
+  }
+}

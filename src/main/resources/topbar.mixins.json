@@ -1,0 +1,24 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "click.isreal.topbar.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+    "InGameHudMixin",
+    "ScoreboardMixins"
+  ],
+  "client": [
+    "BossBarHudMixin",
+    "ChatHudAccessor",
+    "ChatHudInvoker",
+    "DebugHudMixin",
+    "InGameHudMixin",
+    "MinecraftClientMixin",
+    "ScreenMixin",
+    "SplashScreenMixin",
+    "ClientLoginNetworkHandlerMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
