@@ -25,12 +25,17 @@ package click.isreal.topbar.client;
  ******************************************************************************/
 
 import click.isreal.topbar.Topbar;
+import click.isreal.topbar.domain.MixelWorld;
+import click.isreal.topbar.domain.MixelWorldType;
+import click.isreal.topbar.domain.ScoreboardData;
+import click.isreal.topbar.events.MixelJoinCallback;
 import me.shedaniel.clothconfig2.api.ConfigBuilder;
 import me.shedaniel.clothconfig2.api.ConfigCategory;
 import me.shedaniel.clothconfig2.api.ConfigEntryBuilder;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
@@ -50,23 +55,9 @@ public class TopbarClient implements ClientModInitializer
     public String strSplitter = Formatting.GRAY + " | ";
     public String strTopLeft = "";
     public String strTopRight = "";
-    public String strMoney = "";
-    public String strMoneyPocket = "";
-    public String strRolle = "";
-    public String strKills = "";
-    public String strDeath = "";
-    public String strKD = "";
-    public String strKffaMap = "";
-    public String strKffaTime = "";
-    public String strRangPoints = "";
-    public String strAufstiegPoints = ""; //todo: give it a nice english name LUL
-    public String strDimension = "";
-    public String DEBUGTEXT = Formatting.YELLOW + "";
-    public String strPlotName = "";
-    public String strPlotOwner = "";
-    public mpWorld world = mpWorld.OTHER;
-    public discordRPC dc;
+    public DiscordRPC dc;
     private boolean _isMixel = false;
+    private final ScoreboardData scoreboardData = new ScoreboardData(MixelWorld.OTHER);
 
     {
         instance = this;
@@ -77,86 +68,49 @@ public class TopbarClient implements ClientModInitializer
         return instance;
     }
 
+    public ScoreboardData getScoreboardData() {
+        return scoreboardData;
+    }
+
+    public MixelWorld getWorld(){
+        return scoreboardData.mixelWorld();
+    }
+
     @Override
     public void onInitializeClient()
     {
+        this.initEventCallbacks();
         System.out.println("\\u001b[0;35mYVE™ - Topbar: started at " + java.time.LocalDateTime.now());
-        try
-        {
-            dc = new discordRPC();
+        try {
+            dc = new DiscordRPC();
+        }catch (Exception e) {
+            Topbar.LOGGER.warn("Error starting DC: \n" + e.getMessage());
         }
-        catch (Exception e)
-        {
-            // Topbar.log.log(Level.WARN, "Error starting DC: \n" + e.getMessage());
-        }
+    }
+
+    private void initEventCallbacks(){
+        ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> setisMixel(false));
+        ClientPlayConnectionEvents.INIT.register(new MixelJoinCallback());
     }
 
     public void setisMixel( boolean Status )
     {
+        Topbar.LOGGER.info((Status ? "Joining" : "Leaving") + " Mixelpixel Server");
         _isMixel = Status;
     }
 
     public boolean isMixelPixel()
     {
         return _isMixel;
-        // return (!this.client.isInSingleplayer() || this.client.getServer() != null && this.client.getServer().isRemote()) && (MinecraftClient.getInstance().getNetworkHandler() != null) && (MinecraftClient.getInstance().getNetworkHandler().getConnection().getAddress() != null) && MinecraftClient.getInstance().getNetworkHandler().getConnection().getAddress().toString().matches(".*45\\.135\\.203\\.18.*");
-/*        if ( !this.client.isInSingleplayer() && this.client.world != null
-                && MinecraftClient.getInstance().getNetworkHandler().getConnection().getAddress().toString().matches(".*45\\.135\\.203\\.18.*")
-        ) return true;
-
- */
     }
 
-    public String getWorldName( mpWorld world )
-    {
-        switch (world)
-        {
-            // ""+ <== Dirty Trick to force converting enum to String
-            case HUB:
-                return "" + Formatting.WHITE + Formatting.BOLD + "LOBBY";
-            case SPAWN1:
-                return "" + Formatting.WHITE + Formatting.BOLD + "SPAWN-1";
-            case SPAWN2:
-                return "" + Formatting.WHITE + Formatting.BOLD + "SPAWN-2";
-            case SPAWN3:
-                return "" + Formatting.WHITE + Formatting.BOLD + "SPAWN-3";
-            case SPAWN4:
-                return "" + Formatting.WHITE + Formatting.BOLD + "SPAWN-4";
-            case WW:
-                return "" + Formatting.GOLD + Formatting.BOLD + "WW";
-            case KFFA:
-                return "" + Formatting.AQUA + Formatting.BOLD + "KFFA";
-            case FARMWORLD1:
-                return "" + Formatting.GRAY + Formatting.BOLD + "FARMWELT-1";
-            case FARMWORLD2:
-                return "" + Formatting.GRAY + Formatting.BOLD + "FARMWELT-2";
-            case FARMWORLD3:
-                return "" + Formatting.GRAY + Formatting.BOLD + "FARMWELT-3";
-            case FARMWORLD4:
-                return "" + Formatting.GRAY + Formatting.BOLD + "FARMWELT-4";
-            case SMALLFLORA:
-                return "" + Formatting.GREEN + Formatting.BOLD + "CB-KLEIN BLUMEN";
-            case SMALLAQUA:
-                return "" + Formatting.AQUA + Formatting.BOLD + "CB-KLEIN AQUA";
-            case SMALLVULKAN:
-                return "" + Formatting.RED + Formatting.BOLD + "CB-KLEIN VULKAN";
-            case SMALLDONNER:
-                return "" + Formatting.GOLD + Formatting.BOLD + "CB-KLEIN DONNER";
-            case BIGFLORA:
-                return "" + Formatting.GREEN + Formatting.BOLD + "CB-GROSS BLUMEN";
-            case BIGAQUA:
-                return "" + Formatting.AQUA + Formatting.BOLD + "CB-GROSS AQUA";
-            case BIGVULKAN:
-                return "" + Formatting.RED + Formatting.BOLD + "CB-GROSS VULKAN";
-            case BIGDONNER:
-                return "" + Formatting.GOLD + Formatting.BOLD + "CB-GROSS DONNER";
-            case EVENT:
-                return "" + Formatting.WHITE + Formatting.BOLD + "EVENT";
-            case XMASEVENT:
-                return "" + Formatting.RED + Formatting.BOLD + "XMAS-EVENT";
-            default:
-                return "" + Formatting.RED + Formatting.BOLD + "UNKNOWN";
-        }
+    public String buildName(MixelWorld world){
+        String name = world.getFormatting().toString() + Formatting.BOLD + world.getType().getName().toUpperCase();
+        if(world.getType() == MixelWorldType.FARMWORLD || world.getType() == MixelWorldType.SPAWN)
+            name += "-" + world.getSubtype();
+        if(world.getType() == MixelWorldType.SMALL_CB || world.getType() == MixelWorldType.BIG_CB)
+            name += " " + world.getSubtype();
+        return name;
     }
 
     public String getFPS()
@@ -180,65 +134,42 @@ public class TopbarClient implements ClientModInitializer
         // reserve 7 char space for fps String, if we show it
         strTopLeft = "" + Formatting.BLUE + Formatting.BOLD + "MixelPixel.net" + Formatting.GRAY + " - ";
 
-        switch (world)
-        {
-            case HUB:
-            case SPAWN1:
-            case SPAWN2:
-            case SPAWN3:
-            case SPAWN4:
-                strTopLeft = getWorldName(world) + Formatting.GRAY + " - " + strRolle;
+        MixelWorld world = getWorld();
+        switch (world) {
+            case HUB, SPAWN_1, SPAWN_2, SPAWN_3, SPAWN_4 -> {
+                strTopLeft = buildName(world) + Formatting.GRAY + " - " + scoreboardData.rank();
                 strTopRight = "";
-                break;
-            case WW:
-                strTopLeft += getWorldName(world) + Formatting.GRAY + " - " + strRolle;
-                strTopRight = strKills + strSplitter + strDeath + strSplitter + strKD + strSplitter;
-                if ( Topbar.getInstance().isStreamerMode() ) strTopRight = Formatting.YELLOW + "[STREAMING]";
-                else strTopRight = strMoney + strSplitter + strMoneyPocket;
-                break;
-            case KFFA:
-                strTopLeft = "" + Formatting.BLUE + Formatting.BOLD + "MP" + Formatting.GRAY + " - " + getWorldName(world) + Formatting.GRAY + " - " + strKffaMap + strKffaTime + Formatting.GRAY + " - " + strRolle;
-                strTopRight = strRangPoints + strAufstiegPoints + strSplitter + strKD + strSplitter;
-                if ( Topbar.getInstance().isStreamerMode() ) strTopRight = Formatting.YELLOW + "[STREAMING]";
-                else strTopRight = strMoney;
-                break;
-            case FARMWORLD1:
-            case FARMWORLD2:
-            case FARMWORLD3:
-            case FARMWORLD4:
-                strTopLeft += getWorldName(world);
-                if ( null != MinecraftClient.getInstance().world )
-                {
-                    if ( World.END == MinecraftClient.getInstance().world.getRegistryKey() ) strDimension = "End";
-                    else if ( World.NETHER == MinecraftClient.getInstance().world.getRegistryKey() )
-                        strDimension = "Nether";
-                    else if ( World.OVERWORLD == MinecraftClient.getInstance().world.getRegistryKey() )
-                        strDimension = "Overworld";
-                    else strDimension = "";
-                }
-                else strDimension = "";
-                if ( Topbar.getInstance().isStreamerMode() ) strTopRight = Formatting.YELLOW + "[STREAMING]";
-                else strTopRight = strMoney;
-                break;
-            case SMALLAQUA:
-            case SMALLDONNER:
-            case SMALLFLORA:
-            case SMALLVULKAN:
-            case BIGAQUA:
-            case BIGDONNER:
-            case BIGFLORA:
-            case BIGVULKAN:
-                strTopLeft += getWorldName(world);
-                strDimension = "";
-                if ( Topbar.getInstance().isStreamerMode() ) strTopRight = Formatting.YELLOW + "[STREAMING]";
-                else strTopRight = strMoney;
-                break;
-            case XMASEVENT:
-                strTopLeft += getWorldName(world);
-                strTopRight = strDeath + strSplitter + strKills;
-                break;
-            default:
-                strTopRight = Formatting.RED + "?"; // at this moment we don't know what to do ;-)
+            }
+            case KFFA -> {
+                strTopLeft = "" + Formatting.BLUE + Formatting.BOLD + "MP" + Formatting.GRAY + " - "
+                        + buildName(world) + Formatting.GRAY + " - " + scoreboardData.kffaMap()
+                        + scoreboardData.kffaMapSwitch() + Formatting.GRAY + " - " + scoreboardData.rank();
+                strTopRight = scoreboardData.rankPoints() + scoreboardData.aufstiegPoints() +
+                        strSplitter + scoreboardData.kffaKD() + strSplitter;
+                if (Topbar.getInstance().isStreamerMode()) strTopRight = Formatting.YELLOW + "[STREAMING]";
+                else strTopRight = scoreboardData.money();
+            }
+            case FARMWORLD_1, FARMWORLD_2, FARMWORLD_3, FARMWORLD_4 -> {
+                strTopLeft += buildName(world);
+                if (null != MinecraftClient.getInstance().world) {
+                    if (World.END == MinecraftClient.getInstance().world.getRegistryKey())
+                        scoreboardData.setDimension("End");
+                    else if (World.NETHER == MinecraftClient.getInstance().world.getRegistryKey())
+                        scoreboardData.setDimension("Nether");
+                    else if (World.OVERWORLD == MinecraftClient.getInstance().world.getRegistryKey())
+                        scoreboardData.setDimension("Overworld");
+                    else scoreboardData.setDimension("");
+                } else scoreboardData.setDimension("");
+                if (Topbar.getInstance().isStreamerMode()) strTopRight = Formatting.YELLOW + "[STREAMING]";
+                else strTopRight = scoreboardData.money();
+            }
+            case SMALL_AQUA, SMALL_DONNER, SMALL_FLORA, SMALL_VULKAN, BIG_AQUA, BIG_DONNER, BIG_FLORA, BIG_VULKAN -> {
+                strTopLeft += buildName(world);
+                scoreboardData.setDimension("");
+                if (Topbar.getInstance().isStreamerMode()) strTopRight = Formatting.YELLOW + "[STREAMING]";
+                else strTopRight = scoreboardData.money();
+            }
+            default -> strTopRight = Formatting.RED + "?"; // at this moment we don't know what to do ;-)
         }
     }
 
@@ -247,7 +178,7 @@ public class TopbarClient implements ClientModInitializer
         if ( FabricLoader.getInstance().isModLoaded("cloth-config2") )
         {
 
-            ConfigBuilder builder = ConfigBuilder.create().setParentScreen(parent).setTitle(Text.literal(Formatting.LIGHT_PURPLE + "" + Formatting.BOLD + "YVE\u2122" + Formatting.WHITE + " - Topbar Mod \u2620"));
+            ConfigBuilder builder = ConfigBuilder.create().setParentScreen(parent).setTitle(Text.literal(Formatting.LIGHT_PURPLE + "" + Formatting.BOLD + "YVE™" + Formatting.WHITE + " - Topbar Mod ☠"));
             ConfigCategory general = builder.getOrCreateCategory(Text.literal("YveTopbar"));
             ConfigEntryBuilder entryBuilder = builder.entryBuilder();
 
@@ -262,18 +193,14 @@ public class TopbarClient implements ClientModInitializer
             general.addEntry(entryBuilder.startBooleanToggle(Text.literal("Show Time"), Topbar.getInstance().isTimeShow()).setDefaultValue(true).setTooltip(Text.literal("If enabled, Time of your computer is shown right-most on the topbar.")).setSaveConsumer(Topbar.getInstance()::setTimeShow).build());
             general.addEntry(entryBuilder.startColorField(Text.literal("Color Time"), Topbar.getInstance().getTimeColor()).setDefaultValue(0xff808080).setAlphaMode(true).setTooltip(Text.literal("Sets the textcolor of Time in Hex. (#AARRGGBB)")).setSaveConsumer(Topbar.getInstance()::setTimeColor).build());
             general.addEntry(entryBuilder.startBooleanToggle(Text.literal("Prevent sending false commands"), Topbar.getInstance().isPreventFalseCommands()).setDefaultValue(true).setTooltip(Text.literal("Prevents sending Chat-Messages starting with '7' or 't/'. As this are the most common typo errors.")).setSaveConsumer(Topbar.getInstance()::setPreventFalseCommands).build());
-            general.addEntry(entryBuilder.startColorField(Text.literal("Color Loading Screen"), Topbar.getInstance().getLoadscreenColor()).setTooltip(Text.literal("Sets the background color of the loadingscreen(the one with the mojang logo) in Hex. (#AARRGGBB)")).setSaveConsumer(Topbar.getInstance()::setLoadscreenColor).build());
+            general.addEntry(entryBuilder.startColorField(Text.literal("Color Loading Screen"), Topbar.getInstance().getLoadscreenColor()).setDefaultValue(0xffff007d).setAlphaMode(true).setTooltip(Text.literal("Sets the background color of the loadingscreen(the one with the mojang logo) in Hex. (#AARRGGBB)")).setSaveConsumer(Topbar.getInstance()::setLoadscreenColor).build());
             general.addEntry(entryBuilder.startBooleanToggle(Text.literal("Enable Discord"), Topbar.getInstance().isDiscordEnabled()).setDefaultValue(true).setTooltip(Text.literal("If enabled and Discord app is running, your profil will show that you are playing on MixelPixel.")).setSaveConsumer(Topbar.getInstance()::setDiscordEnabled).build());
             general.addEntry(entryBuilder.startBooleanToggle(Text.literal("Enable Tool break warning"), Topbar.getInstance().isBreakwarnEnabled()).setDefaultValue(true).setTooltip(Text.literal("If enabled, a warning is displayed if the tool being used is about to be destroyed.")).setSaveConsumer(Topbar.getInstance()::setBreakwarnEnabled).build());
+            general.addEntry(entryBuilder.startBooleanToggle(Text.literal("Toggle Unsecure Server Warning"), Topbar.getInstance().unsecureServerWarning()).setDefaultValue(false).setTooltip(Text.literal("If disabled, no Chat couldn't be verified message is displayed")).setSaveConsumer(Topbar.getInstance()::setUnsecureServerWarning).build());
+            general.addEntry(entryBuilder.startBooleanToggle(Text.literal("Toggle Horn Audio"), Topbar.getInstance().hornAudio()).setDefaultValue(false).setTooltip(Text.literal("If disabled, horn sounds are blocked for your client")).setSaveConsumer(Topbar.getInstance()::setHornAudio).build());
 
             return builder.build();
         }
         return null;
-    }
-
-
-    public enum mpWorld
-    {
-        HUB, WW, KFFA, SPAWN1, SPAWN2, SPAWN3, SPAWN4, FARMWORLD1, FARMWORLD2, FARMWORLD3, FARMWORLD4, SMALLFLORA, SMALLAQUA, SMALLVULKAN, SMALLDONNER, BIGFLORA, BIGAQUA, BIGVULKAN, BIGDONNER, EVENT, XMASEVENT, OTHER
     }
 }

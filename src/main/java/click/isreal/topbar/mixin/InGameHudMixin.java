@@ -26,6 +26,7 @@ package click.isreal.topbar.mixin;
 
 import click.isreal.topbar.Topbar;
 import click.isreal.topbar.client.TopbarClient;
+import click.isreal.topbar.domain.MixelWorld;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
 import com.ibm.icu.text.SimpleDateFormat;
@@ -159,7 +160,7 @@ public abstract class InGameHudMixin extends DrawableHelper
     private void renderScoreboardSidebar( MatrixStack matrices, ScoreboardObjective objective, final CallbackInfo callbackInfo )
     {
 
-        if ( TopbarClient.getInstance().isMixelPixel() && TopbarClient.getInstance().world != TopbarClient.mpWorld.OTHER )
+        if ( TopbarClient.getInstance().isMixelPixel() && TopbarClient.getInstance().getWorld() != MixelWorld.OTHER )
         {
       /* custom scale
       RenderSystem.pushMatrix();
@@ -197,9 +198,13 @@ public abstract class InGameHudMixin extends DrawableHelper
                 this.getTextRenderer().draw(matrices, TopbarClient.getInstance().strSplitter + Formatting.RESET + time, this.scaledWidth - offsetRight, 1, Topbar.getInstance().getTimeColor());
             }
 
-            this.getTextRenderer().draw(matrices, TopbarClient.getInstance().strPlotName, this.scaledWidth - this.getTextRenderer().getWidth(Formatting.strip(TopbarClient.getInstance().strPlotName)) - 2, this.scaledHeight - 19, 0xfff0f0f0);
+            this.getTextRenderer().draw(matrices, TopbarClient.getInstance().getScoreboardData().cbPlotName(),
+                    this.scaledWidth - this.getTextRenderer().getWidth(Formatting.strip(TopbarClient.getInstance().getScoreboardData().cbPlotName())) - 2,
+                    this.scaledHeight - 19, 0xfff0f0f0);
 
-            this.getTextRenderer().draw(matrices, TopbarClient.getInstance().strPlotOwner, this.scaledWidth - this.getTextRenderer().getWidth(Formatting.strip(TopbarClient.getInstance().strPlotOwner)) - 2, this.scaledHeight - 10, 0xfff0f0f0);
+            this.getTextRenderer().draw(matrices, TopbarClient.getInstance().getScoreboardData().cbPlotOwner(),
+                    this.scaledWidth - this.getTextRenderer().getWidth(Formatting.strip(TopbarClient.getInstance().getScoreboardData().cbPlotOwner())) - 2,
+                    this.scaledHeight - 10, 0xfff0f0f0);
 
 
             //this.getFontRenderer().draw(matrices, TopbarClient.getInstance().DEBUGTEXT, 2, 20, Topbar.getInstance().getTimeColor());

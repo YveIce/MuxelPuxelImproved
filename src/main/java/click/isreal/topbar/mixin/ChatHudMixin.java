@@ -24,18 +24,13 @@ package click.isreal.topbar.mixin;
  * SOFTWARE.
  ******************************************************************************/
 
-import com.google.common.collect.Queues;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-
-import java.util.Deque;
 
 @Environment( EnvType.CLIENT )
 @Mixin( ChatHud.class )

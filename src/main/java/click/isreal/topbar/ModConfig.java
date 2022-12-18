@@ -38,7 +38,9 @@ public class ModConfig
     public int timeShow = 1;
     public int timeColor = 0xffff007D;
     public int preventFalseCommands = 0;
-    public int loadscreenColor = 0xffff0000;
+    public int loadscreenColor = 0xffff007D;
     public int discordEnabled = 1;
     public int breakwarnEnabled = 1;
+    public int unsecureServerWarning = 0;
+    public int hornAudio = 0;
 }

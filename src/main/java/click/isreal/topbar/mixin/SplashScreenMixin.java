@@ -24,20 +24,20 @@ package click.isreal.topbar.mixin;
  * SOFTWARE.
  ******************************************************************************/
 
+import click.isreal.topbar.Topbar;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.SplashOverlay;
 import net.minecraft.util.Identifier;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
+import java.util.function.IntSupplier;
+
 @Environment( EnvType.CLIENT )
 @Mixin( SplashOverlay.class )
-public class SplashScreenMixin
-{
-
+public class SplashScreenMixin {
     @Shadow
-    @Final
-    private static Identifier LOGO = new Identifier("textures/gui/title/mixelpixel.png");
+    private static final IntSupplier BRAND_ARGB = () -> Topbar.getInstance().getLoadscreenColor();
+    private static final Identifier LOGO_REPLACE = new Identifier("textures/gui/title/mixelpixel.png");
 }

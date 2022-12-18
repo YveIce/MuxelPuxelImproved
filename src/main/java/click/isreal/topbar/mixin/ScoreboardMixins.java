@@ -26,6 +26,8 @@ package click.isreal.topbar.mixin;
 
 import click.isreal.topbar.Topbar;
 import click.isreal.topbar.client.TopbarClient;
+import click.isreal.topbar.domain.MixelWorld;
+import click.isreal.topbar.domain.ScoreboardData;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.scoreboard.Scoreboard;
@@ -63,147 +65,84 @@ public class ScoreboardMixins
 
         if ( displayName.matches(".*KnockbackFFA.*") )
         {
-            TopbarClient.getInstance().world = TopbarClient.mpWorld.KFFA;
-            TopbarClient.getInstance().strKffaTime = Formatting.DARK_AQUA + " [" + displayName.replaceAll("-[0-9]", "").replaceAll("[^0-9\\:]", "") + "]";
+            String trimmedName = displayName
+                    .replaceAll("-[0-9]", "").replaceAll("[^0-9\\:]", "");
+            TopbarClient.getInstance().getScoreboardData()
+                    .setMixelWorld(MixelWorld.KFFA)
+                    .setKffaMapSwitch(Formatting.DARK_AQUA + " [" + trimmedName + "]");
             if ( text.matches("(.*)Map:(.*)") )
             {
-                TopbarClient.getInstance().strKffaMap = Formatting.YELLOW + text.replaceAll("Map:", "").trim();
+                String map = Formatting.YELLOW + text.replaceAll("Map:", "").trim();
+                ScoreboardData.current().setKffaMap(map);
             }
             else if ( text.matches("(.*)Rang:(.*)") )
             {
-                TopbarClient.getInstance().strRolle = Formatting.WHITE + text.replaceAll("Rang:", "").trim();
+                String rank = Formatting.YELLOW + text.replaceAll("Rang:", "").trim();
+                ScoreboardData.current().setRank(rank);
             }
             else if ( text.matches("(.*)Rangpunkte:(.*)") )
             {
-                TopbarClient.getInstance().strRangPoints = Formatting.AQUA + "[" + text.replaceAll("[^0-9.]", "").trim() + "/";
+                String rankPoints = Formatting.AQUA + "[" + text.replaceAll("[^0-9.]", "").trim() + "/";
+                ScoreboardData.current().setRankPoints(rankPoints);
             }
             else if ( text.matches("(.*)Aufstieg(.*)") )
             {
-                TopbarClient.getInstance().strAufstiegPoints = Formatting.AQUA + text.replaceAll("[^0-9.]", "").trim() + "]";
+                String strAufstiegPoints = Formatting.AQUA + text.replaceAll("[^0-9.]", "").trim() + "]";
+                ScoreboardData.current().setAufstiegPoints(strAufstiegPoints);
             }
             else if ( text.matches("(.*)Coins:(.*)") )
             {
                 String tmpMoney = text.replaceAll("[^0-9,]", "").replaceAll(",", ".");
-                tmpMoney = Topbar.getInstance().moneyformat.format(Double.parseDouble(tmpMoney));
-                TopbarClient.getInstance().strMoney = Formatting.GOLD + tmpMoney;
+                try{
+                    tmpMoney = Topbar.getInstance().moneyformat.format(Double.parseDouble(tmpMoney));
+                    ScoreboardData.current().setMoney(Formatting.GOLD + tmpMoney);
+                }catch (NumberFormatException nfe){
+                    ScoreboardData.current().setMoney(Formatting.GOLD + "<Versteckt>");
+                }
             }
             else if ( text.matches("(.*)K\\/D:(.*)") )
             {
-                TopbarClient.getInstance().strKD = Formatting.YELLOW + text.replaceAll("[^0-9.]", "") + " \u2300";
+                String kd = Formatting.YELLOW + text.replaceAll("[^0-9.]", "") + " ⌀";
+                ScoreboardData.current().setAufstiegPoints(kd);
             }
         }
         else if ( displayName.matches("(.*)CityBuild(.*)") )
         {
-            if ( text.matches(".*Flora Klein.*") )
-            {
-                TopbarClient.getInstance().world = TopbarClient.mpWorld.SMALLFLORA;
+            MixelWorld world = MixelWorld.findWorld(text);
+            if(world != MixelWorld.OTHER){
+                ScoreboardData.current().setMixelWorld(world);
+                return;
             }
-            else if ( text.matches(".*Aqua Klein.*") )
-            {
-                TopbarClient.getInstance().world = TopbarClient.mpWorld.SMALLAQUA;
-            }
-            else if ( text.matches(".*Vulkan Klein.*") )
-            {
-                TopbarClient.getInstance().world = TopbarClient.mpWorld.SMALLVULKAN;
-            }
-            else if ( text.matches(".*Donner Klein.*") )
-            {
-                TopbarClient.getInstance().world = TopbarClient.mpWorld.SMALLDONNER;
-            }
-            else if ( text.matches(".*Flora Groß.*") )
-            {
-                TopbarClient.getInstance().world = TopbarClient.mpWorld.BIGFLORA;
-            }
-            else if ( text.matches(".*Aqua Groß.*") )
-            {
-                TopbarClient.getInstance().world = TopbarClient.mpWorld.BIGAQUA;
-            }
-            else if ( text.matches(".*Vulkan Groß.*") )
-            {
-                TopbarClient.getInstance().world = TopbarClient.mpWorld.BIGVULKAN;
-            }
-            else if ( text.matches(".*Donner Groß.*") )
-            {
-                TopbarClient.getInstance().world = TopbarClient.mpWorld.BIGDONNER;
-            }
-            else if ( text.matches(".*Farmwelt 1.*") )
-            {
-                TopbarClient.getInstance().world = TopbarClient.mpWorld.FARMWORLD1;
-            }
-            else if ( text.matches(".*Farmwelt 2.*") )
-            {
-                TopbarClient.getInstance().world = TopbarClient.mpWorld.FARMWORLD2;
-            }
-            else if ( text.matches(".*Farmwelt 3.*") )
-            {
-                TopbarClient.getInstance().world = TopbarClient.mpWorld.FARMWORLD3;
-            }
-            else if ( text.matches(".*Farmwelt 4.*") )
-            {
-                TopbarClient.getInstance().world = TopbarClient.mpWorld.FARMWORLD4;
-            }
-            else if ( text.matches(".*Spawn 1.*") )
-            {
-                TopbarClient.getInstance().world = TopbarClient.mpWorld.SPAWN1;
-            }
-            else if ( text.matches(".*Spawn 2.*") )
-            {
-                TopbarClient.getInstance().world = TopbarClient.mpWorld.SPAWN2;
-            }
-            else if ( text.matches(".*Spawn 3.*") )
-            {
-                TopbarClient.getInstance().world = TopbarClient.mpWorld.SPAWN3;
-            }
-            else if ( text.matches(".*Spawn 4.*") )
-            {
-                TopbarClient.getInstance().world = TopbarClient.mpWorld.SPAWN4;
-            }
-
-            else if ( text.matches("(.*) ⛀(.*)") )
+            if ( text.matches("(.*) ⛀(.*)") )
             {
                 String tmpMoney = text.replaceAll("[^0-9,]", "").replaceAll(",", ".");
-                tmpMoney = Topbar.getInstance().moneyformat.format(Double.parseDouble(tmpMoney));
-                TopbarClient.getInstance().strMoney = Formatting.YELLOW + tmpMoney;
+                try{
+                    tmpMoney = Topbar.getInstance().moneyformat.format(Double.parseDouble(tmpMoney));
+                    ScoreboardData.current().setMoney(Formatting.YELLOW + tmpMoney);
+                }catch (NumberFormatException nfe){
+                    ScoreboardData.current().setMoney(Formatting.GOLD + "<Versteckt>");
+                }
             }
-
+/*
             else if ( player.matches("§0§([4-9])§f §8• (.*)") )
             {
                 // plotname
-                TopbarClient.getInstance().strPlotName = player.replaceAll("§0§[4-9]§f §8• ", "");
+                ScoreboardData.current().setCbPlotName(player.replaceAll("§0§[4-9]§f §8• ", ""));
             }
             else if ( player.matches("§0§[4-9]§f  §8(.*)") )
             {
                 // plotowner
-                TopbarClient.getInstance().strPlotOwner = player.replaceAll("§0§[4-9]§f  §8► ", "");
-            }
-            else if ( text == "" )
-            {
-                TopbarClient.getInstance().strPlotName = "";
-                TopbarClient.getInstance().strPlotOwner = "";
-            }
-
-        }
-        else if ( displayName.matches(".*Weihnachtsevent.*") )
-        {
-            TopbarClient.getInstance().world = TopbarClient.mpWorld.XMASEVENT;
-            if ( text.matches("(.*)/100$") )
-            {
-                String tmp = text.replaceAll("/100", "").replaceAll("[^0-9]", "");
-                TopbarClient.getInstance().strDeath = Formatting.RED + "Geschenke: " + Formatting.WHITE + tmp + "/100";
-            }
-            if ( text.matches("(.*)/10$") )
-            {
-                String tmp = text.replaceAll("/10", "").replaceAll("[^0-9]", "");
-                TopbarClient.getInstance().strKills = Formatting.GREEN + "Nussknacker: " + Formatting.WHITE + tmp + "/10";
-            }
+                ScoreboardData.current().setCbPlotOwner(player.replaceAll("§0§[4-9]§f  §8► ", ""));
+            }*/
         }
         else if ( text.matches(".*Lobby.*") )
         {
-            TopbarClient.getInstance().world = TopbarClient.mpWorld.HUB;
+            ScoreboardData.current().setMixelWorld(MixelWorld.HUB);
         }
         else if ( text.matches("(.*)Rang:(.*)") )
         {
-            TopbarClient.getInstance().strRolle = Formatting.WHITE + text.replaceAll("• Rang:", "").trim();
+            String rank = Formatting.WHITE + text.replaceAll("• Rang:", "").trim();
+            ScoreboardData.current().setRank(rank);
         }
 /*    else
     {

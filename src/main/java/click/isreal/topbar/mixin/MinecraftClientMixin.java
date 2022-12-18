@@ -131,10 +131,9 @@ public abstract class MinecraftClientMixin
     }
 
     @Inject( method = "doAttack", at = @At( "HEAD" ), cancellable = true )
-    public void onDoAttack(final CallbackInfoReturnable<Boolean> callbackInfo)
+    public void onDoAttack(final CallbackInfoReturnable<Boolean> cir)
     {
         warnBreak(player.getInventory().getMainHandStack());
-        callbackInfo.setReturnValue(true);
     }
 
     @Inject( method = "handleBlockBreaking", at = @At( "HEAD" ), cancellable = true )
