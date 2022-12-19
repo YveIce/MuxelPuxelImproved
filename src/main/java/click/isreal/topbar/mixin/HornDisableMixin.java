@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class HornDisableMixin {
     @Inject(method = "play", at = @At("HEAD"), cancellable = true)
     public void play(SoundInstance sound, CallbackInfo ci){
-        if(!Topbar.getInstance().hornAudio() &&
+        if((Topbar.getInstance().isStreamerMode() || !Topbar.getInstance().hornAudio()) &&
                 sound != null && sound.getId().toString().startsWith("minecraft:item.goat_horn")) {
             Topbar.LOGGER.info("Blocking Horn sound");
             ci.cancel();

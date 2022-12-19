@@ -27,7 +27,7 @@ package click.isreal.topbar.client;
 import click.isreal.topbar.Topbar;
 import click.isreal.topbar.domain.MixelWorld;
 import click.isreal.topbar.domain.MixelWorldType;
-import click.isreal.topbar.domain.ScoreboardData;
+import click.isreal.topbar.domain.UserData;
 import click.isreal.topbar.domain.Winter22Event;
 import click.isreal.topbar.events.MixelJoinCallback;
 import me.shedaniel.clothconfig2.api.ConfigBuilder;
@@ -58,7 +58,7 @@ public class TopbarClient implements ClientModInitializer
     public String strTopRight = "";
     public DiscordRPC dc;
     private boolean _isMixel = false;
-    private final ScoreboardData scoreboardData = new ScoreboardData(MixelWorld.OTHER);
+    private final UserData scoreboardData = new UserData(MixelWorld.OTHER);
 
     {
         instance = this;
@@ -69,7 +69,8 @@ public class TopbarClient implements ClientModInitializer
         return instance;
     }
 
-    public ScoreboardData getScoreboardData() {
+    @Deprecated
+    public UserData getScoreboardData() {
         return scoreboardData;
     }
 
@@ -204,9 +205,6 @@ public class TopbarClient implements ClientModInitializer
             general.setBackground(Identifier.tryParse("minecraft:textures/block/dragon_egg.png"));
             general.addEntry(entryBuilder.startBooleanToggle(Text.literal("Streamer-Mode"), Topbar.getInstance().isStreamerMode()).setDefaultValue(false).setTooltip(Text.literal("If enabled, your ingame money value would be hidden on topbar.")).setSaveConsumer(Topbar.getInstance()::setStreamerMode).build());
             general.addEntry(entryBuilder.startColorField(Text.literal("Color Background"), Topbar.getInstance().getColorBackground()).setDefaultValue(0xf0000000).setAlphaMode(true).setTooltip(Text.literal("Background color of the topbar in Hex. (#AARRGGBB)")).setSaveConsumer(Topbar.getInstance()::setColorBackground).build());
-            general.addEntry(entryBuilder.startIntSlider(Text.literal("Effect Icon Size"), Topbar.getInstance().getEffectIconSize(), 6, 32).setDefaultValue(10).setTooltip(Text.literal("Scales the Effect Icon Size.")).setSaveConsumer(Topbar.getInstance()::setEffectIconSize).build());
-            general.addEntry(entryBuilder.startColorField(Text.literal("Color Effect Icon Positive"), Topbar.getInstance().getEffectColorPositive()).setDefaultValue(0xff00ff00).setAlphaMode(true).setTooltip(Text.literal("Sets the backgroundcolor of positive effect icon in Hex. (#AARRGGBB)")).setSaveConsumer(Topbar.getInstance()::setEffectColorPositive).build());
-            general.addEntry(entryBuilder.startColorField(Text.literal("Color Effect Icon Negative"), Topbar.getInstance().getEffectColorNegative()).setDefaultValue(0xffff0000).setAlphaMode(true).setTooltip(Text.literal("Sets the backgroundcolor of negative effect icon in Hex. (#AARRGGBB)")).setSaveConsumer(Topbar.getInstance()::setEffectColorNegative).build());
             general.addEntry(entryBuilder.startBooleanToggle(Text.literal("Show FPS"), Topbar.getInstance().isFpsShow()).setDefaultValue(true).setTooltip(Text.literal("If enabled, FPS is shown left-most on the topbar.")).setSaveConsumer(Topbar.getInstance()::setFpsShow).build());
             general.addEntry(entryBuilder.startColorField(Text.literal("Color FPS"), Topbar.getInstance().getFpsColor()).setDefaultValue(0xff808080).setAlphaMode(true).setTooltip(Text.literal("Sets the textcolor of FPS in Hex. (#AARRGGBB)")).setSaveConsumer(Topbar.getInstance()::setFpsColor).build());
             general.addEntry(entryBuilder.startBooleanToggle(Text.literal("Show Time"), Topbar.getInstance().isTimeShow()).setDefaultValue(true).setTooltip(Text.literal("If enabled, Time of your computer is shown right-most on the topbar.")).setSaveConsumer(Topbar.getInstance()::setTimeShow).build());

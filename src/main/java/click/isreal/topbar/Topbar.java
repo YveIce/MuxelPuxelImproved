@@ -261,6 +261,7 @@ public class Topbar implements ModInitializer
 
     public void setUnsecureServerWarning( boolean secureServerWarning ){
         this.config.unsecureServerWarning =  secureServerWarning ? 1 : 0;
+        saveConfig();
     }
 
     public boolean hornAudio(){
@@ -269,6 +270,7 @@ public class Topbar implements ModInitializer
 
     public void setHornAudio( boolean hornAudio ){
         this.config.hornAudio =  hornAudio ? 1 : 0;
+        saveConfig();
     }
 
 }

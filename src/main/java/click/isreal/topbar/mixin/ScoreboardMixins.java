@@ -27,7 +27,7 @@ package click.isreal.topbar.mixin;
 import click.isreal.topbar.Topbar;
 import click.isreal.topbar.client.TopbarClient;
 import click.isreal.topbar.domain.MixelWorld;
-import click.isreal.topbar.domain.ScoreboardData;
+import click.isreal.topbar.domain.UserData;
 import click.isreal.topbar.domain.Winter22Event;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -74,44 +74,44 @@ public class ScoreboardMixins
             if ( text.matches("(.*)Map:(.*)") )
             {
                 String map = Formatting.YELLOW + text.replaceAll("Map:", "").trim();
-                ScoreboardData.current().setKffaMap(map);
+                UserData.current().setKffaMap(map);
             }
             else if ( text.matches("(.*)Rang:(.*)") )
             {
                 String rank = Formatting.YELLOW + text.replaceAll("Rang:", "").trim();
-                ScoreboardData.current().setRank(rank);
+                UserData.current().setRank(rank);
             }
             else if ( text.matches("(.*)Rangpunkte:(.*)") )
             {
                 String rankPoints = Formatting.AQUA + "[" + text.replaceAll("[^0-9.]", "").trim() + "/";
-                ScoreboardData.current().setRankPoints(rankPoints);
+                UserData.current().setRankPoints(rankPoints);
             }
             else if ( text.matches("(.*)Aufstieg(.*)") )
             {
                 String strAufstiegPoints = Formatting.AQUA + text.replaceAll("[^0-9.]", "").trim() + "]";
-                ScoreboardData.current().setAufstiegPoints(strAufstiegPoints);
+                UserData.current().setAufstiegPoints(strAufstiegPoints);
             }
             else if ( text.matches("(.*)Coins:(.*)") )
             {
                 String tmpMoney = text.replaceAll("[^0-9,]", "").replaceAll(",", ".");
                 try{
                     tmpMoney = Topbar.getInstance().moneyformat.format(Double.parseDouble(tmpMoney));
-                    ScoreboardData.current().setMoney(Formatting.GOLD + tmpMoney);
+                    UserData.current().setMoney(Formatting.GOLD + tmpMoney);
                 }catch (NumberFormatException nfe){
-                    ScoreboardData.current().setMoney(Formatting.GOLD + "<Versteckt>");
+                    UserData.current().setMoney(Formatting.GOLD + "<Versteckt>");
                 }
             }
             else if ( text.matches("(.*)K\\/D:(.*)") )
             {
                 String kd = Formatting.YELLOW + text.replaceAll("[^0-9.]", "") + " ⌀";
-                ScoreboardData.current().setAufstiegPoints(kd);
+                UserData.current().setAufstiegPoints(kd);
             }
         }
         else if ( displayName.matches("(.*)CityBuild(.*)") )
         {
             MixelWorld world = MixelWorld.findWorld(text);
             if(world != MixelWorld.OTHER){
-                ScoreboardData.current().setMixelWorld(world);
+                UserData.current().setMixelWorld(world);
                 return;
             }
             if ( text.matches("(.*) ⛀(.*)") )
@@ -119,9 +119,9 @@ public class ScoreboardMixins
                 String tmpMoney = text.replaceAll("[^0-9,]", "").replaceAll(",", ".");
                 try{
                     tmpMoney = Topbar.getInstance().moneyformat.format(Double.parseDouble(tmpMoney));
-                    ScoreboardData.current().setMoney(Formatting.YELLOW + tmpMoney);
+                    UserData.current().setMoney(Formatting.YELLOW + tmpMoney);
                 }catch (NumberFormatException nfe){
-                    ScoreboardData.current().setMoney(Formatting.GOLD + "<Versteckt>");
+                    UserData.current().setMoney(Formatting.GOLD + "<Versteckt>");
                 }
             }
 /*
@@ -136,30 +136,27 @@ public class ScoreboardMixins
                 ScoreboardData.current().setCbPlotOwner(player.replaceAll("§0§[4-9]§f  §8► ", ""));
             }*/
         }else if( text.matches(".*Lobby.*") ) {
-            ScoreboardData.current().setMixelWorld(MixelWorld.HUB);
+            UserData.current().setMixelWorld(MixelWorld.HUB);
         }
         else if ( text.matches("(.*)Rang:(.*)") )
         {
             String rank = Formatting.WHITE + text.replaceAll("• Rang:", "").trim();
-            ScoreboardData.current().setRank(rank);
+            UserData.current().setRank(rank);
         }
 
         if(displayName.matches("(.*)Winterevent(.*)")) {
             if (text.matches("(.*)Türchen:(.*)")) {
                 String tuer = Formatting.YELLOW + text.replaceAll("• Türchen:", "").trim();
-                ScoreboardData.current().getInjection(Winter22Event.class).setTuer(tuer);
+                UserData.current().getInjection(Winter22Event.class).setTuer(tuer);
             } else if (text.matches("(.*)Modus:(.*)")) {
                 String mode = Formatting.YELLOW + text.replaceAll("• Modus:", "").trim();
-                ScoreboardData.current().getInjection(Winter22Event.class).setModus(mode);
+                UserData.current().getInjection(Winter22Event.class).setModus(mode);
             } else if (text.matches("(.*)Checkpoint:(.*)")) {
                 String cp = Formatting.YELLOW + text.replaceAll("• Checkpoint:", "").trim();
-                ScoreboardData.current().getInjection(Winter22Event.class).setCheckpoints(cp);
+                UserData.current().getInjection(Winter22Event.class).setCheckpoints(cp);
             }
         }else{
-            ScoreboardData.current().getInjection(Winter22Event.class)
-                    .setTuer(null)
-                    .setModus(null)
-                    .setCheckpoints(null);
+            UserData.current().updateIfExists(Winter22Event.class, (i) -> i.setTuer(null).setModus(null).setCheckpoints(null));
         }
 /*    else
     {

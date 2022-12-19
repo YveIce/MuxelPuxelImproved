@@ -3,13 +3,13 @@ package click.isreal.topbar.domain;
 import click.isreal.topbar.client.TopbarClient;
 import org.jetbrains.annotations.Nullable;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
-public class ScoreboardData{
-    public static ScoreboardData current(){
+public class UserData {
+    public static UserData current(){
         return TopbarClient.getInstance().getScoreboardData();
     }
     MixelWorld mixelWorld;
@@ -24,7 +24,7 @@ public class ScoreboardData{
     @Nullable String kffaMap;
     @Nullable String kffaMapSwitch;
     private Map<Class<?>, Object> injections = new HashMap<>();
-    public ScoreboardData(MixelWorld world) {
+    public UserData(MixelWorld world) {
         this.mixelWorld = world;
     }
 
@@ -32,7 +32,7 @@ public class ScoreboardData{
         return mixelWorld;
     }
 
-    public ScoreboardData setMixelWorld(MixelWorld mixelWorld) {
+    public UserData setMixelWorld(MixelWorld mixelWorld) {
         this.mixelWorld = mixelWorld;
         return this;
     }
@@ -41,7 +41,7 @@ public class ScoreboardData{
         return dimension;
     }
 
-    public ScoreboardData setDimension(String dimension) {
+    public UserData setDimension(String dimension) {
         this.dimension = dimension;
         return this;
     }
@@ -50,7 +50,7 @@ public class ScoreboardData{
         return rank;
     }
 
-    public ScoreboardData setRank(String rank) {
+    public UserData setRank(String rank) {
         this.rank = rank;
         return this;
     }
@@ -59,7 +59,7 @@ public class ScoreboardData{
         return money;
     }
 
-    public ScoreboardData setMoney(String money) {
+    public UserData setMoney(String money) {
         this.money = money;
         return this;
     }
@@ -68,7 +68,7 @@ public class ScoreboardData{
         return cbPlotName;
     }
 
-    public ScoreboardData setCbPlotName(String cbPlotName) {
+    public UserData setCbPlotName(String cbPlotName) {
         this.cbPlotName = cbPlotName;
         return this;
     }
@@ -77,7 +77,7 @@ public class ScoreboardData{
         return cbPlotOwner;
     }
 
-    public ScoreboardData setCbPlotOwner(String cbPlotOwner) {
+    public UserData setCbPlotOwner(String cbPlotOwner) {
         this.cbPlotOwner = cbPlotOwner;
         return this;
     }
@@ -86,7 +86,7 @@ public class ScoreboardData{
         return kffaKD;
     }
 
-    public ScoreboardData setKffaKD(String kffaKD) {
+    public UserData setKffaKD(String kffaKD) {
         this.kffaKD = kffaKD;
         return this;
     }
@@ -95,7 +95,7 @@ public class ScoreboardData{
         return rankPoints;
     }
 
-    public ScoreboardData setRankPoints(String rankPoints) {
+    public UserData setRankPoints(String rankPoints) {
         this.rankPoints = rankPoints;
         return this;
     }
@@ -104,7 +104,7 @@ public class ScoreboardData{
         return aufstiegPoints;
     }
 
-    public ScoreboardData setAufstiegPoints(String aufstiegPoints) {
+    public UserData setAufstiegPoints(String aufstiegPoints) {
         this.aufstiegPoints = aufstiegPoints;
         return this;
     }
@@ -113,7 +113,7 @@ public class ScoreboardData{
         return kffaMap;
     }
 
-    public ScoreboardData setKffaMap(String kffaMap) {
+    public UserData setKffaMap(String kffaMap) {
         this.kffaMap = kffaMap;
         return this;
     }
@@ -122,7 +122,7 @@ public class ScoreboardData{
         return kffaMapSwitch;
     }
 
-    public ScoreboardData setKffaMapSwitch(String kffaMapSwitch) {
+    public UserData setKffaMapSwitch(String kffaMapSwitch) {
         this.kffaMapSwitch = kffaMapSwitch;
         return this;
     }
@@ -131,8 +131,20 @@ public class ScoreboardData{
         return (T) this.injections.get(classType);
     }
 
-    public <T> void createInjection(Class<T> classType)
-            throws Exception {
-        this.injections.put(classType, classType.getDeclaredConstructor().newInstance());
+    public <T> String readSafeString(Class<T> classType, Function<T, String> f){
+        T object = getInjection(classType);
+        if(object != null) return f.apply(object);
+        return "";
+    }
+
+    public <T> void updateIfExists(Class<T> classType, Consumer<T> update){
+        T object = getInjection(classType);
+        if(object != null) update.accept(object);
+    }
+
+    public <T> T createInjection(Class<T> classType) throws Exception {
+        if(this.injections.containsKey(classType))
+            return(T) this.injections.get(classType);
+        return (T) this.injections.put(classType, classType.getDeclaredConstructor().newInstance());
     }
 }

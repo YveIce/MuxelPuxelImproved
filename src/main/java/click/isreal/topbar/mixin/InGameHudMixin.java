@@ -52,6 +52,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.Collection;
@@ -76,8 +77,7 @@ public abstract class InGameHudMixin extends DrawableHelper
     public abstract TextRenderer getTextRenderer();
 
     @Inject( method = "renderStatusEffectOverlay", at = @At( "HEAD" ), cancellable = true )
-    public void renderStatusEffectOverlay( MatrixStack matrices, final CallbackInfo ci )
-    {
+    public void renderStatusEffectOverlay( MatrixStack matrices, final CallbackInfo ci ) {
         Collection<StatusEffectInstance> collection = this.client.player.getStatusEffects();
         if ( !collection.isEmpty() )
         {
@@ -86,69 +86,57 @@ public abstract class InGameHudMixin extends DrawableHelper
             int j = 0;
             StatusEffectSpriteManager statusEffectSpriteManager = this.client.getStatusEffectSpriteManager();
             List<Runnable> list = Lists.newArrayListWithExpectedSize(collection.size());
-            this.client.getTextureManager().bindTexture(HandledScreen.BACKGROUND_TEXTURE);
-            Iterator var7 = Ordering.natural().reverse().sortedCopy(collection).iterator();
+            RenderSystem.setShaderTexture(0, HandledScreen.BACKGROUND_TEXTURE);
 
-            while ( var7.hasNext() )
-            {
-                StatusEffectInstance statusEffectInstance = (StatusEffectInstance) var7.next();
+            for (StatusEffectInstance statusEffectInstance : Ordering.natural().reverse().sortedCopy(collection)) {
                 StatusEffect statusEffect = statusEffectInstance.getEffectType();
-                if ( statusEffectInstance.shouldShowIcon() )
-                {
+                if (statusEffectInstance.shouldShowIcon()) {
                     int k = this.scaledWidth;
-                    int l = 0;
-                    if ( this.client.isDemo() )
-                    {
+                    int l = 1;
+                    if (this.client.isDemo()) {
                         l += 15;
                     }
-
-                    if ( TopbarClient.getInstance().isMixelPixel() )
-                    {
+                    if (TopbarClient.getInstance().isMixelPixel()) {
                         l += 10;
                     }
 
-                    if ( statusEffect.isBeneficial() )
-                    {
+                    if (statusEffect.isBeneficial()) {
                         ++i;
-                        k -= (Topbar.getInstance().getEffectIconSize() + 2) * i;
-                    }
-                    else
-                    {
+                        k -= 25 * i;
+                    } else {
                         ++j;
-                        k -= (Topbar.getInstance().getEffectIconSize() + 2) * j;
-                        l += (Topbar.getInstance().getEffectIconSize() + 2);
+                        k -= 25 * j;
+                        l += 26;
                     }
 
-                    RenderSystem.clearColor(1.0F, 1.0F, 1.0F, 1.0F);
-                    float f = 1.0F;
-                    if ( statusEffectInstance.isAmbient() )
-                    {
-                        //this.drawTexture(matrices, k, l, 165, 166, 14, 14, 14, 14);
-                        fill(matrices, k, l, k + (Topbar.getInstance().getEffectIconSize() + 2), l + (Topbar.getInstance().getEffectIconSize() + 2), Topbar.getInstance().getEffectColorPositive());
-                    }
-                    else
-                    {
-                        fill(matrices, k, l, k + (Topbar.getInstance().getEffectIconSize() + 2), l + (Topbar.getInstance().getEffectIconSize() + 2), Topbar.getInstance().getEffectColorNegative());
-                        if ( statusEffectInstance.getDuration() <= 200 )
-                        {
+                    RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+                    float f;
+                    if (statusEffectInstance.isAmbient()) {
+                        f = 1.0F;
+                        this.drawTexture(matrices, k, l, 165, 166, 24, 24);
+                    } else {
+                        this.drawTexture(matrices, k, l, 141, 166, 24, 24);
+                        if (statusEffectInstance.getDuration() <= 200) {
                             int m = 10 - statusEffectInstance.getDuration() / 20;
                             f = MathHelper.clamp((float) statusEffectInstance.getDuration() / 10.0F / 5.0F * 0.5F, 0.0F, 0.5F) + MathHelper.cos((float) statusEffectInstance.getDuration() * 3.1415927F / 5.0F) * MathHelper.clamp((float) m / 10.0F * 0.25F, 0.0F, 0.25F);
+                        } else {
+                            f = 1.0F;
                         }
                     }
 
                     Sprite sprite = statusEffectSpriteManager.getSprite(statusEffect);
-                    float finalF = f;
                     int finalK = k;
                     int finalL = l;
                     list.add(() -> {
-                        this.client.getTextureManager().bindTexture(sprite.getAtlasId());
-                        RenderSystem.clearColor(1.0F, 1.0F, 1.0F, finalF);
-                        drawSprite(matrices, finalK + 1, finalL + 1, this.getZOffset(), Topbar.getInstance().getEffectIconSize(), Topbar.getInstance().getEffectIconSize(), sprite);
+                        RenderSystem.setShaderTexture(0, sprite.getAtlas().getId());
+                        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, f);
+                        drawSprite(matrices, finalK + 3, finalL + 3, this.getZOffset(), 18, 18, sprite);
                     });
                 }
             }
 
             list.forEach(Runnable::run);
+            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         }
         if ( ci.isCancellable() )
         {

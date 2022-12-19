@@ -25,6 +25,7 @@ package click.isreal.topbar.client;
  ******************************************************************************/
 
 import click.isreal.topbar.Topbar;
+import click.isreal.topbar.domain.UserData;
 import net.arikia.dev.drpc.DiscordEventHandlers;
 import net.arikia.dev.drpc.DiscordRichPresence;
 import net.minecraft.util.Formatting;
@@ -110,15 +111,15 @@ public class DiscordRPC
         {
             String world = Formatting.strip(topbar.buildName(topbar.getWorld()));
             String state = switch (topbar.getWorld()) {
-                case HUB -> topbar.getScoreboardData().rank();
+                case HUB -> UserData.current().rank();
                 case KFFA -> {
-                    world += " - " + Formatting.strip(topbar.getScoreboardData().rank());
-                    yield topbar.getScoreboardData().kffaMap() + " " + topbar.getScoreboardData().kffaMapSwitch();
+                    world += " - " + Formatting.strip(UserData.current().rank());
+                    yield UserData.current().kffaMap() + " " + UserData.current().kffaMapSwitch();
                 }
-                case FARMWORLD_1, FARMWORLD_2, FARMWORLD_3, FARMWORLD_4 -> topbar.getScoreboardData().dimension();
+                case FARMWORLD_1, FARMWORLD_2, FARMWORLD_3, FARMWORLD_4 -> UserData.current().dimension();
                 case SMALL_FLORA, SMALL_AQUA, SMALL_VULKAN, SMALL_DONNER, BIG_FLORA, BIG_AQUA, BIG_VULKAN, BIG_DONNER -> {
-                    if (StringUtils.isNoneBlank(topbar.getScoreboardData().cbPlotName(), topbar.getScoreboardData().cbPlotOwner()))
-                        yield "Plot " + topbar.getScoreboardData().cbPlotName() + " | " + topbar.getScoreboardData().cbPlotOwner();
+                    if (StringUtils.isNoneBlank(UserData.current().cbPlotName(), UserData.current().cbPlotOwner()))
+                        yield "Plot " + UserData.current().cbPlotName() + " | " + UserData.current().cbPlotOwner();
                     yield "";
                 }
                 default -> "";
