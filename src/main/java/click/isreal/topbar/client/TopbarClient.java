@@ -28,6 +28,7 @@ import click.isreal.topbar.Topbar;
 import click.isreal.topbar.domain.MixelWorld;
 import click.isreal.topbar.domain.MixelWorldType;
 import click.isreal.topbar.domain.ScoreboardData;
+import click.isreal.topbar.domain.Winter22Event;
 import click.isreal.topbar.events.MixelJoinCallback;
 import me.shedaniel.clothconfig2.api.ConfigBuilder;
 import me.shedaniel.clothconfig2.api.ConfigCategory;
@@ -79,6 +80,11 @@ public class TopbarClient implements ClientModInitializer
     @Override
     public void onInitializeClient()
     {
+        try {
+            this.loadInjections();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         this.initEventCallbacks();
         System.out.println("\\u001b[0;35mYVE™ - Topbar: started at " + java.time.LocalDateTime.now());
         try {
@@ -86,6 +92,10 @@ public class TopbarClient implements ClientModInitializer
         }catch (Exception e) {
             Topbar.LOGGER.warn("Error starting DC: \n" + e.getMessage());
         }
+    }
+
+    private void loadInjections() throws Exception {
+        this.getScoreboardData().createInjection(Winter22Event.class);
     }
 
     private void initEventCallbacks(){
@@ -134,42 +144,51 @@ public class TopbarClient implements ClientModInitializer
         // reserve 7 char space for fps String, if we show it
         strTopLeft = "" + Formatting.BLUE + Formatting.BOLD + "MixelPixel.net" + Formatting.GRAY + " - ";
 
-        MixelWorld world = getWorld();
-        switch (world) {
-            case HUB, SPAWN_1, SPAWN_2, SPAWN_3, SPAWN_4 -> {
-                strTopLeft = buildName(world) + Formatting.GRAY + " - " + scoreboardData.rank();
-                strTopRight = "";
+        if(getScoreboardData().getInjection(Winter22Event.class).tuer() != null){
+            Winter22Event event = getScoreboardData().getInjection(Winter22Event.class);
+            strTopLeft = Formatting.RED + "Winterevent";
+            strTopRight = Formatting.YELLOW + "Türchen: " + event.tuer() +
+                    Formatting.GRAY + " | " + Formatting.YELLOW + "Modus: " + event.modus();
+            if(event.checkpoints() != null)
+                strTopRight += Formatting.GRAY + " | " + Formatting.YELLOW + "Checkpoint: " + event.checkpoints();
+        }else {
+            MixelWorld world = getWorld();
+            switch (world) {
+                case HUB, SPAWN_1, SPAWN_2, SPAWN_3, SPAWN_4 -> {
+                    strTopLeft = buildName(world) + Formatting.GRAY + " - " + scoreboardData.rank();
+                    strTopRight = "";
+                }
+                case KFFA -> {
+                    strTopLeft = "" + Formatting.BLUE + Formatting.BOLD + "MP" + Formatting.GRAY + " - "
+                            + buildName(world) + Formatting.GRAY + " - " + scoreboardData.kffaMap()
+                            + scoreboardData.kffaMapSwitch() + Formatting.GRAY + " - " + scoreboardData.rank();
+                    strTopRight = scoreboardData.rankPoints() + scoreboardData.aufstiegPoints() +
+                            strSplitter + scoreboardData.kffaKD() + strSplitter;
+                    if (Topbar.getInstance().isStreamerMode()) strTopRight = Formatting.YELLOW + "[STREAMING]";
+                    else strTopRight = scoreboardData.money();
+                }
+                case FARMWORLD_1, FARMWORLD_2, FARMWORLD_3, FARMWORLD_4 -> {
+                    strTopLeft += buildName(world);
+                    if (null != MinecraftClient.getInstance().world) {
+                        if (World.END == MinecraftClient.getInstance().world.getRegistryKey())
+                            scoreboardData.setDimension("End");
+                        else if (World.NETHER == MinecraftClient.getInstance().world.getRegistryKey())
+                            scoreboardData.setDimension("Nether");
+                        else if (World.OVERWORLD == MinecraftClient.getInstance().world.getRegistryKey())
+                            scoreboardData.setDimension("Overworld");
+                        else scoreboardData.setDimension("");
+                    } else scoreboardData.setDimension("");
+                    if (Topbar.getInstance().isStreamerMode()) strTopRight = Formatting.YELLOW + "[STREAMING]";
+                    else strTopRight = scoreboardData.money();
+                }
+                case SMALL_AQUA, SMALL_DONNER, SMALL_FLORA, SMALL_VULKAN, BIG_AQUA, BIG_DONNER, BIG_FLORA, BIG_VULKAN -> {
+                    strTopLeft += buildName(world);
+                    scoreboardData.setDimension("");
+                    if (Topbar.getInstance().isStreamerMode()) strTopRight = Formatting.YELLOW + "[STREAMING]";
+                    else strTopRight = scoreboardData.money();
+                }
+                default -> strTopRight = Formatting.RED + "?"; // at this moment we don't know what to do ;-)
             }
-            case KFFA -> {
-                strTopLeft = "" + Formatting.BLUE + Formatting.BOLD + "MP" + Formatting.GRAY + " - "
-                        + buildName(world) + Formatting.GRAY + " - " + scoreboardData.kffaMap()
-                        + scoreboardData.kffaMapSwitch() + Formatting.GRAY + " - " + scoreboardData.rank();
-                strTopRight = scoreboardData.rankPoints() + scoreboardData.aufstiegPoints() +
-                        strSplitter + scoreboardData.kffaKD() + strSplitter;
-                if (Topbar.getInstance().isStreamerMode()) strTopRight = Formatting.YELLOW + "[STREAMING]";
-                else strTopRight = scoreboardData.money();
-            }
-            case FARMWORLD_1, FARMWORLD_2, FARMWORLD_3, FARMWORLD_4 -> {
-                strTopLeft += buildName(world);
-                if (null != MinecraftClient.getInstance().world) {
-                    if (World.END == MinecraftClient.getInstance().world.getRegistryKey())
-                        scoreboardData.setDimension("End");
-                    else if (World.NETHER == MinecraftClient.getInstance().world.getRegistryKey())
-                        scoreboardData.setDimension("Nether");
-                    else if (World.OVERWORLD == MinecraftClient.getInstance().world.getRegistryKey())
-                        scoreboardData.setDimension("Overworld");
-                    else scoreboardData.setDimension("");
-                } else scoreboardData.setDimension("");
-                if (Topbar.getInstance().isStreamerMode()) strTopRight = Formatting.YELLOW + "[STREAMING]";
-                else strTopRight = scoreboardData.money();
-            }
-            case SMALL_AQUA, SMALL_DONNER, SMALL_FLORA, SMALL_VULKAN, BIG_AQUA, BIG_DONNER, BIG_FLORA, BIG_VULKAN -> {
-                strTopLeft += buildName(world);
-                scoreboardData.setDimension("");
-                if (Topbar.getInstance().isStreamerMode()) strTopRight = Formatting.YELLOW + "[STREAMING]";
-                else strTopRight = scoreboardData.money();
-            }
-            default -> strTopRight = Formatting.RED + "?"; // at this moment we don't know what to do ;-)
         }
     }
 

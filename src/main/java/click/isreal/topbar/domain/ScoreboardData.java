@@ -3,6 +3,11 @@ package click.isreal.topbar.domain;
 import click.isreal.topbar.client.TopbarClient;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+
 public class ScoreboardData{
     public static ScoreboardData current(){
         return TopbarClient.getInstance().getScoreboardData();
@@ -18,6 +23,7 @@ public class ScoreboardData{
     @Nullable String aufstiegPoints;
     @Nullable String kffaMap;
     @Nullable String kffaMapSwitch;
+    private Map<Class<?>, Object> injections = new HashMap<>();
     public ScoreboardData(MixelWorld world) {
         this.mixelWorld = world;
     }
@@ -119,5 +125,14 @@ public class ScoreboardData{
     public ScoreboardData setKffaMapSwitch(String kffaMapSwitch) {
         this.kffaMapSwitch = kffaMapSwitch;
         return this;
+    }
+
+    public <T> T getInjection(Class<T> classType){
+        return (T) this.injections.get(classType);
+    }
+
+    public <T> void createInjection(Class<T> classType)
+            throws Exception {
+        this.injections.put(classType, classType.getDeclaredConstructor().newInstance());
     }
 }

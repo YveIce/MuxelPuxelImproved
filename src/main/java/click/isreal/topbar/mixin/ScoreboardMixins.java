@@ -28,6 +28,7 @@ import click.isreal.topbar.Topbar;
 import click.isreal.topbar.client.TopbarClient;
 import click.isreal.topbar.domain.MixelWorld;
 import click.isreal.topbar.domain.ScoreboardData;
+import click.isreal.topbar.domain.Winter22Event;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.scoreboard.Scoreboard;
@@ -134,15 +135,31 @@ public class ScoreboardMixins
                 // plotowner
                 ScoreboardData.current().setCbPlotOwner(player.replaceAll("§0§[4-9]§f  §8► ", ""));
             }*/
-        }
-        else if ( text.matches(".*Lobby.*") )
-        {
+        }else if( text.matches(".*Lobby.*") ) {
             ScoreboardData.current().setMixelWorld(MixelWorld.HUB);
         }
         else if ( text.matches("(.*)Rang:(.*)") )
         {
             String rank = Formatting.WHITE + text.replaceAll("• Rang:", "").trim();
             ScoreboardData.current().setRank(rank);
+        }
+
+        if(displayName.matches("(.*)Winterevent(.*)")) {
+            if (text.matches("(.*)Türchen:(.*)")) {
+                String tuer = Formatting.YELLOW + text.replaceAll("• Türchen:", "").trim();
+                ScoreboardData.current().getInjection(Winter22Event.class).setTuer(tuer);
+            } else if (text.matches("(.*)Modus:(.*)")) {
+                String mode = Formatting.YELLOW + text.replaceAll("• Modus:", "").trim();
+                ScoreboardData.current().getInjection(Winter22Event.class).setModus(mode);
+            } else if (text.matches("(.*)Checkpoint:(.*)")) {
+                String cp = Formatting.YELLOW + text.replaceAll("• Checkpoint:", "").trim();
+                ScoreboardData.current().getInjection(Winter22Event.class).setCheckpoints(cp);
+            }
+        }else{
+            ScoreboardData.current().getInjection(Winter22Event.class)
+                    .setTuer(null)
+                    .setModus(null)
+                    .setCheckpoints(null);
         }
 /*    else
     {
