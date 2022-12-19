@@ -128,7 +128,7 @@ public abstract class InGameHudMixin extends DrawableHelper
                     int finalK = k;
                     int finalL = l;
                     list.add(() -> {
-                        RenderSystem.setShaderTexture(0, sprite.getAtlas().getId());
+                        RenderSystem.setShaderTexture(0, sprite.getAtlasId());
                         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, f);
                         drawSprite(matrices, finalK + 3, finalL + 3, this.getZOffset(), 18, 18, sprite);
                     });
