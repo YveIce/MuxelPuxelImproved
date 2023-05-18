@@ -155,9 +155,15 @@ public class TopbarClient implements ClientModInitializer
         }else {
             MixelWorld world = getWorld();
             switch (world) {
-                case HUB, SPAWN_1, SPAWN_2, SPAWN_3, SPAWN_4 -> {
-                    strTopLeft = buildName(world) + Formatting.GRAY + " - " + scoreboardData.rank();
+                case HUB -> {
+                    strTopLeft = buildName(world) + Formatting.GRAY + " - " + UserData.current().rank();
                     strTopRight = "";
+                }
+                case SPAWN_1, SPAWN_2, SPAWN_3, SPAWN_4 -> {
+                    strTopLeft = buildName(world) + Formatting.GRAY + " - " + UserData.current().rank();
+                    String money = Topbar.getInstance().isStreamerMode() ? Formatting.YELLOW + "[STREAMING]" : UserData.current().money();
+                    String jubilaeum = UserData.current().getJubiProgress() != null ? UserData.current().getJubiProgress() + Formatting.GRAY + " | " : "";
+                    strTopRight = jubilaeum + money;
                 }
                 case KFFA -> {
                     strTopLeft = "" + Formatting.BLUE + Formatting.BOLD + "MP" + Formatting.GRAY + " - "
@@ -179,14 +185,16 @@ public class TopbarClient implements ClientModInitializer
                             scoreboardData.setDimension("Overworld");
                         else scoreboardData.setDimension("");
                     } else scoreboardData.setDimension("");
-                    if (Topbar.getInstance().isStreamerMode()) strTopRight = Formatting.YELLOW + "[STREAMING]";
-                    else strTopRight = scoreboardData.money();
+                    String money = Topbar.getInstance().isStreamerMode() ? Formatting.YELLOW + "[STREAMING]" : UserData.current().money();
+                    String jubilaeum = UserData.current().getJubiProgress() != null ? UserData.current().getJubiProgress() + Formatting.GRAY + " | " : "";
+                    strTopRight = jubilaeum + money;
                 }
                 case SMALL_AQUA, SMALL_DONNER, SMALL_FLORA, SMALL_VULKAN, BIG_AQUA, BIG_DONNER, BIG_FLORA, BIG_VULKAN -> {
                     strTopLeft += buildName(world);
                     scoreboardData.setDimension("");
-                    if (Topbar.getInstance().isStreamerMode()) strTopRight = Formatting.YELLOW + "[STREAMING]";
-                    else strTopRight = scoreboardData.money();
+                    String money = Topbar.getInstance().isStreamerMode() ? Formatting.YELLOW + "[STREAMING]" : UserData.current().money();
+                    String jubilaeum = UserData.current().getJubiProgress() != null ? UserData.current().getJubiProgress() + Formatting.GRAY + " | " : "";
+                    strTopRight = jubilaeum + money;
                 }
                 default -> strTopRight = Formatting.RED + "?"; // at this moment we don't know what to do ;-)
             }

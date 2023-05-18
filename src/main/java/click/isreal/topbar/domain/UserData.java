@@ -16,6 +16,7 @@ public class UserData {
     @Nullable String dimension;
     @Nullable String rank;
     @Nullable String money;
+    @Nullable String jubiProgress;
     @Nullable String cbPlotName;
     @Nullable String cbPlotOwner;
     @Nullable String kffaKD;
@@ -125,6 +126,14 @@ public class UserData {
     public UserData setKffaMapSwitch(String kffaMapSwitch) {
         this.kffaMapSwitch = kffaMapSwitch;
         return this;
+    }
+
+    public void setJubiProgress(String jubiProgress) {
+        this.jubiProgress = jubiProgress;
+    }
+
+    public @Nullable String getJubiProgress() {
+        return jubiProgress;
     }
 
     public <T> T getInjection(Class<T> classType){

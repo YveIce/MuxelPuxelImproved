@@ -124,6 +124,10 @@ public class ScoreboardMixins
                     UserData.current().setMoney(Formatting.GOLD + "<Versteckt>");
                 }
             }
+
+            if(player.contains("%§8]")){
+                UserData.current().setJubiProgress(player);
+            }
 /*
             else if ( player.matches("§0§([4-9])§f §8• (.*)") )
             {
@@ -175,10 +179,7 @@ public class ScoreboardMixins
     @Inject( method = "getPlayerScore", at = @At( "HEAD" ) )
     public void getPlayerScore( String player, ScoreboardObjective objective, CallbackInfoReturnable<ScoreboardPlayerScore> infoReturnable )
     {
-        if ( player.length() <= 40 )
-        {
-            updateObjective(player, objective);
-        }
+        updateObjective(player, objective);
     }
 
     @Inject( method = "updateExistingObjective", at = @At( "HEAD" ) )
