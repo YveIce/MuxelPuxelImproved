@@ -29,6 +29,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.BossBarHud;
 import net.minecraft.client.gui.hud.ClientBossBar;
 import net.minecraft.client.util.math.MatrixStack;
@@ -59,10 +60,10 @@ public class BossBarHudMixin
     private MinecraftClient client;
 
     @Shadow
-    private void renderBossBar(MatrixStack matrices, int x, int y, BossBar bossBar){}
+    private void renderBossBar(DrawContext context, int x, int y, BossBar bossBar){}
 
     @Inject( method = "render", at = @At( "HEAD" ), cancellable = true )
-    public void render(MatrixStack matrices, CallbackInfo callbackInfo) {
+    public void render(DrawContext context, CallbackInfo callbackInfo) {
         if (!this.bossBars.isEmpty()) {
             int i = this.client.getWindow().getScaledWidth();
             int j = 24;
@@ -73,12 +74,12 @@ public class BossBarHudMixin
                 int k = i / 2 - 91;
                 RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
                 RenderSystem.setShaderTexture(0, BARS_TEXTURE);
-                this.renderBossBar(matrices, k, j, clientBossBar);
+                this.renderBossBar(context, k, j, clientBossBar);
                 Text text = clientBossBar.getName();
                 int m = this.client.textRenderer.getWidth(text);
                 int n = i / 2 - m / 2;
                 int o = j - 9;
-                this.client.textRenderer.drawWithShadow(matrices, text, (float)n, (float)o, 16777215);
+                context.drawTextWithShadow(this.client.textRenderer, text, n, o, 16777215);
                 Objects.requireNonNull(this.client.textRenderer);
                 j += 22 + 9;
                 if (j >= this.client.getWindow().getScaledHeight() / 3) {
