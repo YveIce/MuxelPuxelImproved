@@ -25,17 +25,18 @@ package click.isreal.topbar.client;
  ******************************************************************************/
 
 import click.isreal.topbar.Topbar;
+import click.isreal.topbar.domain.UserData;
 import net.arikia.dev.drpc.DiscordEventHandlers;
-import net.arikia.dev.drpc.DiscordRPC;
 import net.arikia.dev.drpc.DiscordRichPresence;
 import net.minecraft.util.Formatting;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 
 import java.sql.Timestamp;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 
-public class discordRPC
+public class DiscordRPC
 {
     private final static String appId = "916437803326406721";
     private final TopbarClient topbar = TopbarClient.getInstance();
@@ -48,7 +49,7 @@ public class discordRPC
     public DiscordPresentationThread thread;
     public boolean doRun = false;
 
-    public discordRPC()
+    public DiscordRPC()
     {
         try
         {
@@ -74,10 +75,10 @@ public class discordRPC
             timeStampStart = new Timestamp(System.currentTimeMillis()).getTime();
             try
             {
-                DiscordRPC.discordInitialize(appId, handlers, true);
+                net.arikia.dev.drpc.DiscordRPC.discordInitialize(appId, handlers, true);
                 presence = buildPresence();
-                DiscordRPC.discordUpdatePresence(presence);
-                DiscordRPC.discordRegister(appId, "");
+                net.arikia.dev.drpc.DiscordRPC.discordUpdatePresence(presence);
+                net.arikia.dev.drpc.DiscordRPC.discordRegister(appId, "");
             }
             catch (Throwable e)
             {
@@ -94,7 +95,7 @@ public class discordRPC
     {
         doRun = false;
         thread.stop();
-        DiscordRPC.discordShutdown();
+        net.arikia.dev.drpc.DiscordRPC.discordShutdown();
     }
 
     public DiscordRichPresence buildPresence()
@@ -104,32 +105,25 @@ public class discordRPC
             timeStampStart = new Timestamp(System.currentTimeMillis()).getTime();
             oldState = !oldState;
         }
+        if(!topbar.isMixelPixel()) oldState = false;
 
         if ( oldState )
         {
-            String state = "";
-            String world = Formatting.strip(topbar.getWorldName(topbar.world));
-            switch (topbar.world)
-            {
-                case HUB:
-                    state = topbar.strRolle;
-                    break;
-                case WW:
-                    state = topbar.strRolle;
-                    break;
-                case KFFA:
-                    world += " - " + Formatting.strip(topbar.strRolle);
-                    state = topbar.strKffaMap + " " + topbar.strKffaTime;
-                    break;
-                case FARMWORLD1:
-                case FARMWORLD2:
-                case FARMWORLD3:
-                case FARMWORLD4:
-                    state = topbar.strDimension;
-                    break;
-                default:
-                    state = "";
-            }
+            String world = Formatting.strip(topbar.buildName(topbar.getWorld()));
+            String state = switch (topbar.getWorld()) {
+                case HUB -> UserData.current().rank();
+                case KFFA -> {
+                    world += " - " + Formatting.strip(UserData.current().rank());
+                    yield UserData.current().kffaMap() + " " + UserData.current().kffaMapSwitch();
+                }
+                case FARMWORLD_1, FARMWORLD_2, FARMWORLD_3, FARMWORLD_4 -> UserData.current().dimension();
+                case SMALL_FLORA, SMALL_AQUA, SMALL_VULKAN, SMALL_DONNER, BIG_FLORA, BIG_AQUA, BIG_VULKAN, BIG_DONNER -> {
+                    if (StringUtils.isNoneBlank(UserData.current().cbPlotName(), UserData.current().cbPlotOwner()))
+                        yield "Plot " + UserData.current().cbPlotName() + " | " + UserData.current().cbPlotOwner();
+                    yield "";
+                }
+                default -> "";
+            };
             DiscordRichPresence.Builder presence = new DiscordRichPresence.Builder(Formatting.strip(state));
             presence.setDetails(world);
             presence.setBigImage("logomp", "Join MixelPixel Discord:\n discord.gg/mixelpixel");
@@ -138,7 +132,7 @@ public class discordRPC
         }
         else
         {
-            DiscordRichPresence.Builder presence = new DiscordRichPresence.Builder("made by Yve" + "\u2122");
+            DiscordRichPresence.Builder presence = new DiscordRichPresence.Builder("From Yve™ continued by Klysma");
             presence.setDetails("using an MC-Mod ");
             presence.setBigImage("logolurkklinik", "Visit DonnerPrinzessin @CB-Donner");
             presence.setStartTimestamps(timeStampStart);
@@ -176,8 +170,8 @@ public class discordRPC
             while ( running.get() )
             {
                 presence = buildPresence();
-                DiscordRPC.discordUpdatePresence(presence);
-                DiscordRPC.discordRunCallbacks();
+                net.arikia.dev.drpc.DiscordRPC.discordUpdatePresence(presence);
+                net.arikia.dev.drpc.DiscordRPC.discordRunCallbacks();
                 try
                 {
                     Thread.sleep(1000);

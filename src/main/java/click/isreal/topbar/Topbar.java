@@ -255,4 +255,22 @@ public class Topbar implements ModInitializer
         saveConfig();
     }
 
+    public boolean unsecureServerWarning(){
+        return config.unsecureServerWarning != 0;
+    }
+
+    public void setUnsecureServerWarning( boolean secureServerWarning ){
+        this.config.unsecureServerWarning =  secureServerWarning ? 1 : 0;
+        saveConfig();
+    }
+
+    public boolean hornAudio(){
+        return config.hornAudio != 0;
+    }
+
+    public void setHornAudio( boolean hornAudio ){
+        this.config.hornAudio =  hornAudio ? 1 : 0;
+        saveConfig();
+    }
+
 }

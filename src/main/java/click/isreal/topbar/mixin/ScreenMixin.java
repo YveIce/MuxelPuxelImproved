@@ -34,8 +34,8 @@ import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.OrderedText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import org.apache.logging.log4j.Level;
 import org.spongepowered.asm.mixin.Mixin;
@@ -52,18 +52,6 @@ public class ScreenMixin
 {
     @Shadow
     protected MinecraftClient client;
-
-    @Inject( method = "sendMessage", at = {@At( "HEAD" )}, cancellable = true )
-    public void sendMessage( String message, final CallbackInfo ci )
-    {
-        Topbar.LOGGER.log(Level.WARN, "SendMessage: " + message);
-        if ( TopbarClient.getInstance().isMixelPixel() && Topbar.getInstance().isPreventFalseCommands() && message.matches("^(7|t\\/).*") )
-        {
-            this.client.getSoundManager().play(PositionedSoundInstance.master(SoundEvents.ENTITY_DONKEY_ANGRY, 1.0F, 1.0F));
-            this.client.inGameHud.getChatHud().addMessage(new LiteralText("" + Formatting.LIGHT_PURPLE + Formatting.BOLD + "Yve™: " + Formatting.YELLOW + Formatting.ITALIC + "Die Nachricht wurde zu deinem Schutz nicht gesendet, \nda du vermutlich einen Command mit " + Formatting.RED + Formatting.BOLD + Formatting.ITALIC + "/" + Formatting.YELLOW + Formatting.ITALIC + " verschicken wolltest."));
-            ci.cancel();
-        }
-    }
 
     @Inject( method = "renderOrderedTooltip", at = {@At( "HEAD" )}, cancellable = true )
     public void renderOrderedTooltip( MatrixStack matrices, List<? extends OrderedText> lines, int x, int y, CallbackInfo callbackInfo )

@@ -33,22 +33,65 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
+import net.minecraft.item.*;
 import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import javax.tools.Tool;
 
 @Environment( EnvType.CLIENT )
 @Mixin( MinecraftClient.class )
 public abstract class MinecraftClientMixin
 {
+    private static final String[] messagesTools = new String[]{
+            "Gleich machst du es kaputt!",
+            "Wenn du so weiter machst, hast du bald kein Werkzeug mehr.",
+            "Haltbarkeit auf Wish.com bestellt?",
+            "Schon mal was von reparieren gehört?",
+            "Dein Werkzeug sieht bissel stark gebraucht aus.",
+            "Achtung! Gleich is es weg!",
+            "Ob kaputtes Werkzeug in den Werkzeug-Himmel kommt?",
+            "Mit einem neuem Werkzeug gehts bestimmt besser!",
+            "Jetzt wäre ein guter Zeitpunkt für /repair",
+            "Die Gewährleistung auf dein Werkzeug ist grade abgelaufen.",
+            "Wirf es doch gleich in Lava! Dann ist es auch weg.",
+            "Mit /kit bekommst du neue Sachen zum kaputt machen.",
+            "Ich hoffe es ist dein Werkzeug was du grade zerstörrst.",
+            "Wenn das dein Werkenlehrer sehen würde!",
+            "Bei dem Werkzeug hilft auch kein WD40 mehr.",
+            "Mit bissel Glitzer sieht es bestimmt aus wie Neu.",
+            "Hast du nur ein Werkzeug, das du dieses kaputt machen willst?",
+            "Hey du da am Bildschirm! Schau mal auf die Haltbarkeit!",
+            "Ich kenn nen coolen Trick wie man Werkzeug verschwinden lassen kann.",
+            "Könnte dein Werkzeug reden, würde es 'Aua!' sagen."
+    };
+
+    private static final String[] messagesCombat = new String[]{
+            "Gleich machst du es kaputt!",
+            "Wenn du so weiter machst, hast du bald keine Waffen mehr.",
+            "Haltbarkeit auf Wish.com bestellt?",
+            "Schon mal was von reparieren gehört?",
+            "Deine Waffe sieht aus wie auf Flora gekauft.",
+            "Achtung! Gleich is es weg!",
+            "Ob kaputte Waffen in die Waffenhölle kommen?",
+            "Mit dieser Waffe beeindruckst du nur noch Noobs.",
+            "Jetzt wäre ein guter Zeitpunkt für /repair",
+            "Die Gewährleistung auf deine Waffe ist grade abgelaufen.",
+            "Ene-mene-meg, gleich ist es weg!",
+            "Aufwachen! Träumst du oder ist dir deine Waffe egal?",
+            "Nervt dich der Sound? Soll er auch!",
+            "Würdest du besser aufpassen, würde hier keine Warnung kommen.",
+            "Deine Waffe leidet grade Schmerzen."
+    };
+
     @Shadow
     public ClientPlayerEntity player;
     @Shadow
@@ -64,59 +107,42 @@ public abstract class MinecraftClientMixin
 
     private boolean warnBreak( ItemStack itemStack )
     {
-        if ( isInSingleplayer() || itemStack.isEmpty() || !itemStack.isDamageable() || 0 == itemStack.getDamage() || 10 < (itemStack.getMaxDamage() - itemStack.getDamage()) )
+        if (itemStack.isEmpty() || !itemStack.isDamageable() || 0 == itemStack.getDamage() || 10 < (itemStack.getMaxDamage() - itemStack.getDamage()) )
         {
-            return false;
-        }
-
-        if ( itemStack.getItem().getGroup() != ItemGroup.TOOLS && itemStack.getItem().getGroup() != ItemGroup.COMBAT )
-        {
-            Topbar.LOGGER.info("ItemStack Group is:" + itemStack.getItem().getGroup().getName());
             return false;
         }
 
         String warnText = "Achtung! Weiterer Gebrauch könnte das Item zerstören!";
 
-        if ( itemStack.getItem().getGroup() == ItemGroup.COMBAT )
-        {
-            warnText = Utils.randomString("Gleich machst du es kaputt!", "Wenn du so weiter machst, hast du bald keine Waffen mehr.", "Haltbarkeit auf Wish.com bestellt?", "Schon mal was von reparieren gehört?", "Deine Waffe sieht aus wie auf Flora gekauft.", "Achtung! Gleich is es weg!", "Ob kaputte Waffen in die Waffenhölle kommen?", "Mit dieser Waffe beeindruckst du nur noch Noobs.", "Jetzt wäre ein guter Zeitpunkt für /repair", "Die Gewährleistung auf deine Waffe ist grade abgelaufen.", "Ene-mene-meg, gleich ist es weg!", "Aufwachen! Träumst du oder ist dir deine Waffe egal?", "Nervt dich der Sound? Soll er auch!", "Würdest du besser aufpassen, würde hier keine Warnung kommen.", "Deine Waffe leidet grade Schmerzen.");
-        }
-        else
-        {
-            warnText = Utils.randomString("Gleich machst du es kaputt!", "Wenn du so weiter machst, hast du bald kein Werkzeug mehr.", "Haltbarkeit auf Wish.com bestellt?", "Schon mal was von reparieren gehört?", "Dein Werkzeug sieht bissel stark gebraucht aus.", "Achtung! Gleich is es weg!", "Ob kaputtes Werkzeug in den Werkzeug-Himmel kommt?", "Mit einem neuem Werkzeug gehts bestimmt besser!", "Jetzt wäre ein guter Zeitpunkt für /repair", "Die Gewährleistung auf dein Werkzeug ist grade abgelaufen.", "Wirf es doch gleich in Lava! Dann ist es auch weg.", "Mit /kit bekommst du neue Sachen zum kaputt machen.", "Ich hoffe es ist dein Werkzeug was du grade zerstörrst.", "Wenn das dein Werkenlehrer sehen würde!", "Bei dem Werkzeug hilft auch kein WD40 mehr.", "Mit bissel Glitzer sieht es bestimmt aus wie Neu.", "Hast du nur ein Werkzeug, das du dieses kaputt machen willst?", "Hey du da am Bildschirm! Schau mal auf die Haltbarkeit!", "Ich kenn nen coolen Trick wie man Werkzeug verschwinden lassen kann.", "Könnte dein Werkzeug reden, würde es 'Aua!' sagen.");
-        }
+        if (itemStack.getItem() instanceof MiningToolItem) warnText = Utils.randomString(messagesTools);
+        else if(itemStack.getItem() instanceof ToolItem || itemStack.getItem() instanceof RangedWeaponItem)
+            warnText = Utils.randomString(messagesCombat);
 
-        player.sendMessage(new LiteralText("§e§l" + warnText), true);
+        player.sendMessage(Text.literal("§e§l" + warnText), true);
         player.playSound(SoundEvents.ENTITY_POLAR_BEAR_WARNING, SoundCategory.MASTER, 1.0f, 1.0f);
 
         return true;
     }
 
     @Inject( method = "doItemUse", at = @At( "HEAD" ), cancellable = true )
-    public void onDoItemUse( final CallbackInfo callbackInfo )
+    public void onDoItemUse(final CallbackInfo callbackInfo)
     {
-        //Topbar.LOGGER.info("onDoItemUse");
-        warnBreak(player.inventory.getMainHandStack());
-        // if ( warnBreak(player.inventory.getMainHandStack()) ) callbackInfo.cancel();
+        warnBreak(player.getInventory().getMainHandStack());
     }
 
     @Inject( method = "doAttack", at = @At( "HEAD" ), cancellable = true )
-    public void onDoAttack( final CallbackInfo callbackInfo )
+    public void onDoAttack(final CallbackInfoReturnable<Boolean> cir)
     {
-        //Topbar.LOGGER.info("onDoAttack");
-        warnBreak(player.inventory.getMainHandStack());
-        // if ( warnBreak(player.inventory.getMainHandStack()) ) callbackInfo.cancel();
+        warnBreak(player.getInventory().getMainHandStack());
     }
 
     @Inject( method = "handleBlockBreaking", at = @At( "HEAD" ), cancellable = true )
-    public void onHandleBlockBreaking( boolean isKeyAttackPressed, final CallbackInfo callbackInfo )
+    public void onHandleBlockBreaking( boolean breaking, final CallbackInfo callbackInfo )
     {
-        if ( isKeyAttackPressed )
+        if ( breaking )
         {
-            //Topbar.LOGGER.info("onHandleBlockBreaking");
-            warnBreak(player.inventory.getMainHandStack());
+            warnBreak(player.getInventory().getMainHandStack());
         }
-        //if ( isKeyAttackPressed && warnBreak(player.inventory.getMainHandStack()) ) callbackInfo.cancel();
     }
 
 
@@ -124,7 +150,6 @@ public abstract class MinecraftClientMixin
     public void joinWorld( ClientWorld world, final CallbackInfo callbackInfo )
     {
         Topbar.LOGGER.warn("WORLD CHANGED TO: " + world.getDimension().toString());
-        //    TopbarClient.getInstance().world = TopbarClient.mpWorld.OTHER;
         TopbarClient.getInstance().updateTopBar();
     }
 }

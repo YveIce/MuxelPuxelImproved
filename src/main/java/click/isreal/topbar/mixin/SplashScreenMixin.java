@@ -27,46 +27,17 @@ package click.isreal.topbar.mixin;
 import click.isreal.topbar.Topbar;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.SplashScreen;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.gui.screen.SplashOverlay;
 import net.minecraft.util.Identifier;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import java.util.function.IntSupplier;
 
 @Environment( EnvType.CLIENT )
-@Mixin( SplashScreen.class )
-public class SplashScreenMixin
-{
+@Mixin( SplashOverlay.class )
+public class SplashScreenMixin {
     @Shadow
-    private static int BRAND_RGB;
-    @Shadow
-    private static int BRAND_ARGB;
-
-    @Shadow
-    private static Identifier LOGO;
-
-    private boolean logoinit = false;
-
-    @Inject( method = "init", at = @At( "HEAD" ), cancellable = true )
-    private static void init( MinecraftClient client, CallbackInfo callbackInfo )
-    {
-    }
-
-    @Inject( method = "render", at = @At( "HEAD" ) )
-    public void render( MatrixStack matrices, int mouseX, int mouseY, float delta, final CallbackInfo callbackInfo )
-    {
-        if ( !logoinit )
-        {
-            LOGO = new Identifier("textures/gui/title/mixelpixel.png");
-            logoinit = true;
-        }
-
-        BRAND_ARGB = Topbar.getInstance().getLoadscreenColor();
-        BRAND_RGB = BRAND_ARGB & 16777215;
-    }
-
+    private static final IntSupplier BRAND_ARGB = () -> Topbar.getInstance().getLoadscreenColor();
+    private static final Identifier LOGO_REPLACE = new Identifier("textures/gui/title/mixelpixel.png");
 }
