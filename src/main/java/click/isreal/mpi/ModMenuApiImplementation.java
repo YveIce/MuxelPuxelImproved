@@ -1,9 +1,7 @@
-package click.isreal.topbar.mixin;
-
-/*******************************************************************************
+/*
  * MIT License
  *
- * Copyright (c) 2022 YveIce
+ * Copyright (c) 2022-2023 YveIce, Enrico Messall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,18 +20,19 @@ package click.isreal.topbar.mixin;
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- ******************************************************************************/
+ */
 
-import net.minecraft.client.gui.hud.ChatHud;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.gen.Invoker;
+package click.isreal.mpi;
 
-@Mixin( ChatHud.class )
-public interface ChatHudInvoker
+import click.isreal.mpi.client.mpiClient;
+import com.terraformersmc.modmenu.api.ConfigScreenFactory;
+import com.terraformersmc.modmenu.api.ModMenuApi;
+
+public class ModMenuApiImplementation implements ModMenuApi
 {
-    @Invoker( "isChatFocused" )
-    boolean isChatFocusedInvoker();
-
-    @Invoker( "isChatHidden" )
-    boolean isChatHiddenInvoker();
+  @Override
+  public ConfigScreenFactory<?> getModConfigScreenFactory()
+  {
+    return parent -> mpiClient.getInstance().createConfigScreen(parent);
+  }
 }

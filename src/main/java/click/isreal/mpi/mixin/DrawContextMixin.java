@@ -1,9 +1,7 @@
-package click.isreal.topbar.mixin;
-
-/*******************************************************************************
+/*
  * MIT License
  *
- * Copyright (c) 2022 YveIce
+ * Copyright (c) 2022-2023 YveIce, Enrico Messall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,23 +20,39 @@ package click.isreal.topbar.mixin;
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- ******************************************************************************/
+ */
+
+package click.isreal.mpi.mixin;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.hud.ChatHud;
-import org.spongepowered.asm.mixin.Final;
+import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.tooltip.TooltipComponent;
+import net.minecraft.client.gui.tooltip.TooltipPositioner;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Environment( EnvType.CLIENT )
-@Mixin( ChatHud.class )
-public class ChatHudListenerMixin
+import java.util.List;
+
+@Environment(EnvType.CLIENT)
+@Mixin(DrawContext.class)
+public class DrawContextMixin
 {
+  @Shadow
+  protected MinecraftClient client;
 
-    @Shadow
-    @Final
-    private MinecraftClient client;
+//   Expected (Lnet/minecraft/class_327;Ljava/util/List;Ljava/util/Optional;IILorg/spongepowered/asm/mixin/injection/callback/CallbackInfo;)V
+//  but found (Lnet/minecraft/class_327;Ljava/util/List;IILnet/minecraft/class_8000;Lorg/spongepowered/asm/mixin/injection/callback/CallbackInfoReturnable;)V
+
+  @Inject(method = "drawTooltip(Lnet/minecraft/client/font/TextRenderer;Ljava/util/List;IILnet/minecraft/client/gui/tooltip/TooltipPositioner;)V", at = {@At("HEAD")}, cancellable = true)
+  public void drawTooltipInject(TextRenderer textRenderer, List<TooltipComponent> components, int x, int y, TooltipPositioner positioner, CallbackInfo ci)
+  {
+
+  }
 
 }

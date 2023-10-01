@@ -22,30 +22,28 @@
  * SOFTWARE.
  */
 
-package net.arikia.dev.drpc;
+package click.isreal.mpi.domain;
 
-/**
- * @author DeJay
- * @version 1.6.1
- * <p>
- * Class containing utils for detecting the user's OS.
- */
-public final class OSUtil
+public enum MixelWorldType
 {
+  LOBBY("Lobby"),
+  SPAWN("Spawn"),
+  KFFA("KFFA"),
+  FARMWORLD("Farmwelt"),
+  SMALL_CB("CB-Klein"),
+  BIG_CB("CB-Gross"),
+  EVENT("Event"),
+  OTHER("Unkown");
 
-  public boolean isMac()
+  private final String name;
+
+  MixelWorldType(String name)
   {
-    return getOS().toLowerCase().startsWith("mac");
+    this.name = name;
   }
 
-  public boolean isWindows()
+  public String getName()
   {
-    return getOS().toLowerCase().startsWith("win");
+    return name;
   }
-
-  public String getOS()
-  {
-    return System.getProperty("os.name").toLowerCase();
-  }
-
 }

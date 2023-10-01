@@ -1,9 +1,7 @@
-package click.isreal.topbar.mixin;
-
-/*******************************************************************************
+/*
  * MIT License
  *
- * Copyright (c) 2022 YveIce
+ * Copyright (c) 2022-2023 YveIce, Enrico Messall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,22 +20,27 @@ package click.isreal.topbar.mixin;
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- ******************************************************************************/
+ */
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.hud.BossBarHud;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
+package click.isreal.mpi;
 
-@Environment( EnvType.CLIENT )
-@Mixin( BossBarHud.class )
-public class BossBarHudMixin
+public class ModConfig
 {
-    @ModifyVariable( method = "render", at = @At( "STORE" ), ordinal = 1 )
-    private int injected( final int j )
-    {
-        return 22;
-    }
+  // we are using int instead of boolean, where 0 means FALSE, anything else TRUE
+  // because of GSON can't handle booleans on it's on correctly
+  public int streamerMode = 0;
+  public int colorBackground = 0xff000000;
+  public int effectIconSize = 10;
+  public int effectColorPositive = 0xff00ff00;
+  public int effectColorNegative = 0xffff0000;
+  public int fpsShow = 1;
+  public int fpsColor = 0xff808080;
+  public int timeShow = 1;
+  public int timeColor = 0xffff007D;
+  public int preventFalseCommands = 0;
+  public int loadscreenColor = 0xffff007D;
+  public int discordEnabled = 1;
+  public int breakwarnEnabled = 1;
+  public int unsecureServerWarning = 0;
+  public int hornAudio = 0;
 }

@@ -1,9 +1,7 @@
-package click.isreal.topbar;
-
-/*******************************************************************************
+/*
  * MIT License
  *
- * Copyright (c) 2022 YveIce
+ * Copyright (c) 2022-2023 YveIce, Enrico Messall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,19 +20,29 @@ package click.isreal.topbar;
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- ******************************************************************************/
+ */
 
-import java.util.Random;
+package click.isreal.mpi.mixin;
 
-public final class Utils
+import click.isreal.mpi.Mpi;
+import net.minecraft.client.sound.SoundInstance;
+import net.minecraft.client.sound.SoundSystem;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+@Mixin(SoundSystem.class)
+public class HornDisableMixin
 {
-
-    public static String randomString( String... text )
+  @Inject(method = "play", at = @At("HEAD"), cancellable = true)
+  public void playInject(SoundInstance sound, CallbackInfo ci)
+  {
+    if ((Mpi.getInstance().isStreamerMode() || !Mpi.getInstance().hornAudio()) &&
+        sound != null && sound.getId().toString().startsWith("minecraft:item.goat_horn"))
     {
-        if ( text.length <= 0 ) return "";
-        Random rand = new Random();
-        int randIndex = rand.nextInt(text.length);
-        return text[randIndex];
+      //Mpi.LOGGER.info("Blocking Horn sound");
+      ci.cancel();
     }
-
+  }
 }

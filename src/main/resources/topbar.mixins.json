@@ -1,22 +1,23 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "click.isreal.topbar.mixin",
-  "compatibilityLevel": "JAVA_8",
-  "mixins": [
-    "InGameHudMixin",
-    "ScoreboardMixins"
-  ],
+  "package": "click.isreal.mpi.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [],
   "client": [
+    "InGameHudMixin",
+    "ScoreboardMixins",
     "BossBarHudMixin",
     "ChatHudAccessor",
     "ChatHudInvoker",
     "DebugHudMixin",
     "InGameHudMixin",
     "MinecraftClientMixin",
-    "ScreenMixin",
+    "OrderedTextTooltipComponentMixin",
+    "TooltipBackgroundRendererMixin",
     "SplashScreenMixin",
-    "ClientLoginNetworkHandlerMixin"
+    "UnsecureServerToastMixin",
+    "HornDisableMixin"
   ],
   "injectors": {
     "defaultRequire": 1

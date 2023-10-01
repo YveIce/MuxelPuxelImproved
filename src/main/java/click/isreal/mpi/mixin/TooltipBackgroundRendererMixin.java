@@ -1,9 +1,7 @@
-package click.isreal.topbar.mixin;
-
-/*******************************************************************************
+/*
  * MIT License
  *
- * Copyright (c) 2022 YveIce
+ * Copyright (c) 2022-2023 YveIce, Enrico Messall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,51 +20,29 @@ package click.isreal.topbar.mixin;
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- ******************************************************************************/
+ */
 
-import click.isreal.topbar.Topbar;
+package click.isreal.mpi.mixin;
+
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.SplashScreen;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.tooltip.TooltipBackgroundRenderer;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Environment( EnvType.CLIENT )
-@Mixin( SplashScreen.class )
-public class SplashScreenMixin
+@Environment(EnvType.CLIENT)
+@Mixin(TooltipBackgroundRenderer.class)
+public class TooltipBackgroundRendererMixin
 {
-    @Shadow
-    private static int BRAND_RGB;
-    @Shadow
-    private static int BRAND_ARGB;
-
-    @Shadow
-    private static Identifier LOGO;
-
-    private boolean logoinit = false;
-
-    @Inject( method = "init", at = @At( "HEAD" ), cancellable = true )
-    private static void init( MinecraftClient client, CallbackInfo callbackInfo )
+  @Inject(method = "render", at = {@At("HEAD")}, cancellable = true)
+  private static void renderInject(DrawContext context, int x, int y, int width, int height, int z, CallbackInfo ci)
+  {
+    if (width == 0 || height == 0)
     {
+      ci.cancel();
     }
-
-    @Inject( method = "render", at = @At( "HEAD" ) )
-    public void render( MatrixStack matrices, int mouseX, int mouseY, float delta, final CallbackInfo callbackInfo )
-    {
-        if ( !logoinit )
-        {
-            LOGO = new Identifier("textures/gui/title/mixelpixel.png");
-            logoinit = true;
-        }
-
-        BRAND_ARGB = Topbar.getInstance().getLoadscreenColor();
-        BRAND_RGB = BRAND_ARGB & 16777215;
-    }
-
+  }
 }

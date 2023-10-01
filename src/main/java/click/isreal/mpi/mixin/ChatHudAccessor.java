@@ -1,9 +1,7 @@
-package click.isreal.topbar.mixin;
-
-/*******************************************************************************
+/*
  * MIT License
  *
- * Copyright (c) 2022 YveIce
+ * Copyright (c) 2022-2023 YveIce, Enrico Messall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,30 +20,18 @@ package click.isreal.topbar.mixin;
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- ******************************************************************************/
+ */
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.hud.DebugHud;
+package click.isreal.mpi.mixin;
+
+import net.minecraft.client.gui.hud.ChatHud;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
+import org.spongepowered.asm.mixin.gen.Accessor;
 
-@Environment( EnvType.CLIENT )
-@Mixin( DebugHud.class )
-public class DebugHudMixin
+@Mixin(ChatHud.class)
+public interface ChatHudAccessor
 {
 
-    @ModifyVariable( method = "renderLeftText", at = @At( "STORE" ), ordinal = 1 )
-    private int renderLeftTextInject( final int j )
-    {
-        return 19;
-    }
-
-    @ModifyVariable( method = "renderRightText", at = @At( "STORE" ), ordinal = 1 )
-    private int renderightTextInject( final int j )
-    {
-        return 19;
-    }
-
+  @Accessor
+  int getScrolledLines();
 }

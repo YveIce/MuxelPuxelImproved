@@ -1,9 +1,7 @@
-package click.isreal.topbar;
-
-/*******************************************************************************
+/*
  * MIT License
  *
- * Copyright (c) 2022 YveIce
+ * Copyright (c) 2022-2023 YveIce, Enrico Messall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,23 +20,34 @@ package click.isreal.topbar;
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- ******************************************************************************/
+ */
 
-public class ModConfig
+package click.isreal.mpi.mixin;
+
+import click.isreal.mpi.Mpi;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.toast.SystemToast;
+import net.minecraft.client.toast.Toast;
+import net.minecraft.client.toast.ToastManager;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+@Mixin(SystemToast.class)
+public class UnsecureServerToastMixin
 {
-    // we are using int instead of boolean, where 0 means FALSE, anything else TRUE
-    // because of GSON can't handle booleans on it's on correctly
-    public int streamerMode = 0;
-    public int colorBackground = 0xff000000;
-    public int effectIconSize = 10;
-    public int effectColorPositive = 0xff00ff00;
-    public int effectColorNegative = 0xffff0000;
-    public int fpsShow = 1;
-    public int fpsColor = 0xff808080;
-    public int timeShow = 1;
-    public int timeColor = 0xffff007D;
-    public int preventFalseCommands = 0;
-    public int loadscreenColor = 0xffff0000;
-    public int discordEnabled = 1;
-    public int breakwarnEnabled = 1;
+  @Shadow
+  private SystemToast.Type type;
+
+  @Inject(method = "draw", at = @At("HEAD"), cancellable = true)
+  private void drawInject(DrawContext context, ToastManager manager, long startTime, CallbackInfoReturnable<Toast.Visibility> cir)
+  {
+    if (!Mpi.getInstance().unsecureServerWarning() && type == SystemToast.Type.UNSECURE_SERVER_WARNING)
+    {
+      cir.setReturnValue(Toast.Visibility.HIDE);
+    }
+  }
+
 }

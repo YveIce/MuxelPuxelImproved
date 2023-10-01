@@ -1,9 +1,7 @@
-package click.isreal.topbar.mixin;
-
-/*******************************************************************************
+/*
  * MIT License
  *
- * Copyright (c) 2022 YveIce
+ * Copyright (c) 2022-2023 YveIce, Enrico Messall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,21 +20,25 @@ package click.isreal.topbar.mixin;
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- ******************************************************************************/
+ */
 
-import net.minecraft.client.gui.hud.ChatHud;
-import net.minecraft.text.Text;
+package click.isreal.mpi.mixin;
+
+import click.isreal.mpi.Mpi;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.client.gui.screen.SplashOverlay;
+import net.minecraft.util.Identifier;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.gen.Accessor;
+import org.spongepowered.asm.mixin.Shadow;
 
-import java.util.Deque;
+import java.util.function.IntSupplier;
 
-@Mixin( ChatHud.class )
-public interface ChatHudAccessor
+@Environment(EnvType.CLIENT)
+@Mixin(SplashOverlay.class)
+public class SplashScreenMixin
 {
-    @Accessor
-    Deque<Text> getMessageQueue();
-
-    @Accessor
-    int getScrolledLines();
+  @Shadow
+  private static final IntSupplier BRAND_ARGB = () -> Mpi.getInstance().getLoadscreenColor();
+  private static final Identifier LOGO_REPLACE = new Identifier("textures/gui/title/mixelpixel.png");
 }

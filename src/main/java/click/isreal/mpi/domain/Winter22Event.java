@@ -22,30 +22,44 @@
  * SOFTWARE.
  */
 
-package net.arikia.dev.drpc;
+package click.isreal.mpi.domain;
 
-/**
- * @author DeJay
- * @version 1.6.1
- * <p>
- * Class containing utils for detecting the user's OS.
- */
-public final class OSUtil
+public class Winter22Event
 {
+  private String tuer;
+  private String modus;
+  private String checkpoints;
 
-  public boolean isMac()
+  public String tuer()
   {
-    return getOS().toLowerCase().startsWith("mac");
+    return tuer;
   }
 
-  public boolean isWindows()
+  public Winter22Event setTuer(String tuer)
   {
-    return getOS().toLowerCase().startsWith("win");
+    this.tuer = tuer;
+    return this;
   }
 
-  public String getOS()
+  public String modus()
   {
-    return System.getProperty("os.name").toLowerCase();
+    return modus;
   }
 
+  public Winter22Event setModus(String modus)
+  {
+    this.modus = modus;
+    return this;
+  }
+
+  public String checkpoints()
+  {
+    return checkpoints;
+  }
+
+  public Winter22Event setCheckpoints(String checkpoints)
+  {
+    this.checkpoints = checkpoints;
+    return this;
+  }
 }

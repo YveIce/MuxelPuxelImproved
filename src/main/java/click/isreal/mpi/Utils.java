@@ -22,30 +22,19 @@
  * SOFTWARE.
  */
 
-package net.arikia.dev.drpc;
+package click.isreal.mpi;
 
-/**
- * @author DeJay
- * @version 1.6.1
- * <p>
- * Class containing utils for detecting the user's OS.
- */
-public final class OSUtil
+import java.util.Random;
+
+public final class Utils
 {
 
-  public boolean isMac()
+  public static String randomString(String... text)
   {
-    return getOS().toLowerCase().startsWith("mac");
-  }
-
-  public boolean isWindows()
-  {
-    return getOS().toLowerCase().startsWith("win");
-  }
-
-  public String getOS()
-  {
-    return System.getProperty("os.name").toLowerCase();
+    if (text.length <= 0) return "";
+    Random rand = new Random();
+    int randIndex = rand.nextInt(text.length);
+    return text[randIndex];
   }
 
 }

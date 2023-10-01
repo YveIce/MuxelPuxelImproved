@@ -1,32 +1,32 @@
 {
   "schemaVersion": 1,
-  "id": "topbar",
+  "id": "mpi",
   "version": "${version}",
-  "name": "Yve-Topbar",
+  "name": "Muxelpuxel Improved",
   "description": "Replaces the scoreboard on mixelpixel.net in the most cases with a beautiful and simple bar on the top of the screen. ",
-  "authors": ["Yve"],
+  "authors": ["Yve", "Enrico Messall"],
   "contact": {},
   "license": "MIT",
   "icon": "assets/icon.png",
   "environment": "client",
   "entrypoints": {
     "client": [
-      "click.isreal.topbar.client.TopbarClient"
+      "click.isreal.mpi.client.mpiClient"
     ],
     "main": [
-      "click.isreal.topbar.Topbar"
+      "click.isreal.mpi.Mpi"
     ],
     "modmenu": [
-      "click.isreal.topbar.ModMenuApiImplementation"
+      "click.isreal.mpi.ModMenuApiImplementation"
     ]
   },
   "mixins": [
     "topbar.mixins.json"
   ],
   "depends": {
-    "cloth-config2": ">=4.12.41",
-    "fabricloader": ">=0.12.9",
-    "fabric": "*",
-    "minecraft": ">=1.16.5"
+    "cloth-config2": ">=11.1.106",
+    "fabricloader": ">=0.14.22",
+    "fabric": ">=0.89.0",
+    "minecraft": ">=1.20.1"
   }
 }
