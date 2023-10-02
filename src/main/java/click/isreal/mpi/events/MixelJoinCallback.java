@@ -1,9 +1,7 @@
-package click.isreal.topbar.mixin;
-
-/*******************************************************************************
+/*
  * MIT License
  *
- * Copyright (c) 2022 YveIce
+ * Copyright (c) 2022-2023 YveIce, Enrico Messall
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,23 +20,23 @@ package click.isreal.topbar.mixin;
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- ******************************************************************************/
+ */
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+package click.isreal.mpi.events;
+
+import click.isreal.mpi.client.mpiClient;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.hud.ChatHud;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
+import net.minecraft.client.network.ClientPlayNetworkHandler;
 
-@Environment( EnvType.CLIENT )
-@Mixin( ChatHud.class )
-public class ChatHudListenerMixin
+public class MixelJoinCallback implements ClientPlayConnectionEvents.Init
 {
 
-    @Shadow
-    @Final
-    private MinecraftClient client;
-
+  @Override
+  public void onPlayInit(ClientPlayNetworkHandler handler, MinecraftClient client)
+  {
+    boolean isMixel = (handler.getConnection() != null &&
+        handler.getConnection().getAddress().toString().matches(".*45\\.135\\.203\\.18.*"));
+    mpiClient.getInstance().setisMixel(isMixel);
+  }
 }
