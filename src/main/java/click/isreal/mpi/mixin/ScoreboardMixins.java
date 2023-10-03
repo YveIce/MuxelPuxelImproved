@@ -197,13 +197,13 @@ public class ScoreboardMixins
   @Inject(method = "getPlayerScore", at = @At("HEAD"))
   public void getPlayerScoreInject(String player, ScoreboardObjective objective, CallbackInfoReturnable<ScoreboardPlayerScore> infoReturnable)
   {
-    updateObjective(player, objective);
+    if (mpiClient.getInstance().isMixelPixel()) updateObjective(player, objective);
   }
 
   @Inject(method = "updateExistingObjective", at = @At("HEAD"))
   public void updateExistingObjectiveInject(ScoreboardObjective objective, final CallbackInfo callbackInfo)
   {
-    if (objective != null) updateObjective("", objective);
+    if (mpiClient.getInstance().isMixelPixel() && objective != null) updateObjective("", objective);
   }
 
 }

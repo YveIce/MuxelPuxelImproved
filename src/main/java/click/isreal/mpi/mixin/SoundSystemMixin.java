@@ -24,14 +24,25 @@
 
 package click.isreal.mpi.mixin;
 
-import net.minecraft.client.gui.hud.ChatHud;
+import click.isreal.mpi.Mpi;
+import net.minecraft.client.sound.SoundInstance;
+import net.minecraft.client.sound.SoundSystem;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.gen.Accessor;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(ChatHud.class)
-public interface ChatHudAccessor
+@Mixin(SoundSystem.class)
+public class SoundSystemMixin
 {
-
-  @Accessor
-  int getScrolledLines();
+  @Inject(method = "play", at = @At("HEAD"), cancellable = true)
+  public void playInject(SoundInstance sound, CallbackInfo ci)
+  {
+    if ((Mpi.getInstance().isStreamerMode() || !Mpi.getInstance().hornAudio()) &&
+        sound != null && sound.getId().toString().startsWith("minecraft:item.goat_horn"))
+    {
+      //Mpi.LOGGER.info("Blocking Horn sound");
+      ci.cancel();
+    }
+  }
 }

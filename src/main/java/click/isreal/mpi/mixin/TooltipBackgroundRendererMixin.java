@@ -24,6 +24,7 @@
 
 package click.isreal.mpi.mixin;
 
+import click.isreal.mpi.client.mpiClient;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
@@ -40,7 +41,7 @@ public class TooltipBackgroundRendererMixin
   @Inject(method = "render", at = {@At("HEAD")}, cancellable = true)
   private static void renderInject(DrawContext context, int x, int y, int width, int height, int z, CallbackInfo ci)
   {
-    if (width == 0 || height == 0)
+    if (mpiClient.getInstance().isMixelPixel() && (width == 0 || height == 0))
     {
       ci.cancel();
     }

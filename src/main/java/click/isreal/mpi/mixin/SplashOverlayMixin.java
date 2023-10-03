@@ -24,35 +24,21 @@
 
 package click.isreal.mpi.mixin;
 
+import click.isreal.mpi.Mpi;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.tooltip.TooltipComponent;
-import net.minecraft.client.gui.tooltip.TooltipPositioner;
+import net.minecraft.client.gui.screen.SplashOverlay;
+import net.minecraft.util.Identifier;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.List;
+import java.util.function.IntSupplier;
 
 @Environment(EnvType.CLIENT)
-@Mixin(DrawContext.class)
-public class DrawContextMixin
+@Mixin(SplashOverlay.class)
+public class SplashOverlayMixin
 {
   @Shadow
-  protected MinecraftClient client;
-
-//   Expected (Lnet/minecraft/class_327;Ljava/util/List;Ljava/util/Optional;IILorg/spongepowered/asm/mixin/injection/callback/CallbackInfo;)V
-//  but found (Lnet/minecraft/class_327;Ljava/util/List;IILnet/minecraft/class_8000;Lorg/spongepowered/asm/mixin/injection/callback/CallbackInfoReturnable;)V
-
-  @Inject(method = "drawTooltip(Lnet/minecraft/client/font/TextRenderer;Ljava/util/List;IILnet/minecraft/client/gui/tooltip/TooltipPositioner;)V", at = {@At("HEAD")}, cancellable = true)
-  public void drawTooltipInject(TextRenderer textRenderer, List<TooltipComponent> components, int x, int y, TooltipPositioner positioner, CallbackInfo ci)
-  {
-
-  }
-
+  private static final IntSupplier BRAND_ARGB = () -> Mpi.getInstance().getLoadscreenColor();
+  private static final Identifier LOGO = new Identifier("textures/gui/title/mojangstudios.png");
 }

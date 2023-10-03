@@ -24,6 +24,7 @@
 
 package click.isreal.mpi.mixin;
 
+import click.isreal.mpi.client.mpiClient;
 import com.google.common.collect.Maps;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
@@ -65,32 +66,35 @@ public class BossBarHudMixin
   @Inject(method = "render", at = @At("HEAD"), cancellable = true)
   public void renderInject(DrawContext context, CallbackInfo callbackInfo)
   {
-    if (!this.bossBars.isEmpty())
+    if (mpiClient.getInstance().isMixelPixel())
     {
-      int i = this.client.getWindow().getScaledWidth();
-      int j = 24;
-      Iterator var4 = this.bossBars.values().iterator();
-
-      while (var4.hasNext())
+      if (!this.bossBars.isEmpty())
       {
-        ClientBossBar clientBossBar = (ClientBossBar) var4.next();
-        int k = i / 2 - 91;
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        RenderSystem.setShaderTexture(0, BARS_TEXTURE);
-        this.renderBossBar(context, k, j, clientBossBar);
-        Text text = clientBossBar.getName();
-        int m = this.client.textRenderer.getWidth(text);
-        int n = i / 2 - m / 2;
-        int o = j - 9;
-        context.drawTextWithShadow(this.client.textRenderer, text, n, o, 16777215);
-        Objects.requireNonNull(this.client.textRenderer);
-        j += 22 + 9;
-        if (j >= this.client.getWindow().getScaledHeight() / 3)
+        int i = this.client.getWindow().getScaledWidth();
+        int j = 24;
+        Iterator var4 = this.bossBars.values().iterator();
+
+        while (var4.hasNext())
         {
-          break;
+          ClientBossBar clientBossBar = (ClientBossBar) var4.next();
+          int k = i / 2 - 91;
+          RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+          RenderSystem.setShaderTexture(0, BARS_TEXTURE);
+          this.renderBossBar(context, k, j, clientBossBar);
+          Text text = clientBossBar.getName();
+          int m = this.client.textRenderer.getWidth(text);
+          int n = i / 2 - m / 2;
+          int o = j - 9;
+          context.drawTextWithShadow(this.client.textRenderer, text, n, o, 16777215);
+          Objects.requireNonNull(this.client.textRenderer);
+          j += 22 + 9;
+          if (j >= this.client.getWindow().getScaledHeight() / 3)
+          {
+            break;
+          }
         }
       }
+      if (callbackInfo.isCancellable()) callbackInfo.cancel();
     }
-    callbackInfo.cancel();
   }
 }

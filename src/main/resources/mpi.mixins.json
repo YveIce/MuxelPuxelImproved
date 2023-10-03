@@ -8,16 +8,14 @@
     "InGameHudMixin",
     "ScoreboardMixins",
     "BossBarHudMixin",
-    "ChatHudAccessor",
-    "ChatHudInvoker",
     "DebugHudMixin",
     "InGameHudMixin",
     "MinecraftClientMixin",
     "OrderedTextTooltipComponentMixin",
     "TooltipBackgroundRendererMixin",
-    "SplashScreenMixin",
+    "SplashOverlayMixin",
     "UnsecureServerToastMixin",
-    "HornDisableMixin"
+    "SoundSystemMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -76,82 +76,83 @@ public abstract class InGameHudMixin
   @Inject(method = "renderStatusEffectOverlay", at = @At("HEAD"), cancellable = true)
   public void renderStatusEffectOverlayInject(DrawContext context, final CallbackInfo ci)
   {
-    Collection<StatusEffectInstance> collection = this.client.player.getStatusEffects();
-    if (!collection.isEmpty())
+    if (mpiClient.getInstance().isMixelPixel())
     {
-      RenderSystem.enableBlend();
-      int i = 0;
-      int j = 0;
-      StatusEffectSpriteManager statusEffectSpriteManager = this.client.getStatusEffectSpriteManager();
-      List<Runnable> list = Lists.newArrayListWithExpectedSize(collection.size());
-      RenderSystem.setShaderTexture(0, HandledScreen.BACKGROUND_TEXTURE);
-
-      for (StatusEffectInstance statusEffectInstance : Ordering.natural().reverse().sortedCopy(collection))
+      Collection<StatusEffectInstance> collection = this.client.player.getStatusEffects();
+      if (!collection.isEmpty())
       {
-        StatusEffect statusEffect = statusEffectInstance.getEffectType();
-        if (statusEffectInstance.shouldShowIcon())
+        RenderSystem.enableBlend();
+        int i = 0;
+        int j = 0;
+        StatusEffectSpriteManager statusEffectSpriteManager = this.client.getStatusEffectSpriteManager();
+        List<Runnable> list = Lists.newArrayListWithExpectedSize(collection.size());
+        RenderSystem.setShaderTexture(0, HandledScreen.BACKGROUND_TEXTURE);
+
+        for (StatusEffectInstance statusEffectInstance : Ordering.natural().reverse().sortedCopy(collection))
         {
-          int k = this.scaledWidth;
-          int l = 1;
-          if (this.client.isDemo())
+          StatusEffect statusEffect = statusEffectInstance.getEffectType();
+          if (statusEffectInstance.shouldShowIcon())
           {
-            l += 15;
-          }
-          if (mpiClient.getInstance().isMixelPixel())
-          {
-            l += 10;
-          }
-
-          if (statusEffect.isBeneficial())
-          {
-            ++i;
-            k -= 25 * i;
-          }
-          else
-          {
-            ++j;
-            k -= 25 * j;
-            l += 26;
-          }
-
-          RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-          float f;
-          if (statusEffectInstance.isAmbient())
-          {
-            f = 1.0F;
-            context.drawTexture(HandledScreen.BACKGROUND_TEXTURE, k, l, 165, 166, 24, 24);
-          }
-          else
-          {
-            context.drawTexture(HandledScreen.BACKGROUND_TEXTURE, k, l, 141, 166, 24, 24);
-            if (statusEffectInstance.getDuration() <= 200)
+            int k = this.scaledWidth;
+            int l = 1;
+            if (this.client.isDemo())
             {
-              int m = 10 - statusEffectInstance.getDuration() / 20;
-              f = MathHelper.clamp((float) statusEffectInstance.getDuration() / 10.0F / 5.0F * 0.5F, 0.0F, 0.5F) + MathHelper.cos((float) statusEffectInstance.getDuration() * 3.1415927F / 5.0F) * MathHelper.clamp((float) m / 10.0F * 0.25F, 0.0F, 0.25F);
+              l += 15;
+            }
+            if (mpiClient.getInstance().isMixelPixel())
+            {
+              l += 10;
+            }
+
+            if (statusEffect.isBeneficial())
+            {
+              ++i;
+              k -= 25 * i;
             }
             else
             {
-              f = 1.0F;
+              ++j;
+              k -= 25 * j;
+              l += 26;
             }
+
+            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+            float f;
+            if (statusEffectInstance.isAmbient())
+            {
+              f = 1.0F;
+              context.drawTexture(HandledScreen.BACKGROUND_TEXTURE, k, l, 165, 166, 24, 24);
+            }
+            else
+            {
+              context.drawTexture(HandledScreen.BACKGROUND_TEXTURE, k, l, 141, 166, 24, 24);
+              if (statusEffectInstance.getDuration() <= 200)
+              {
+                int m = 10 - statusEffectInstance.getDuration() / 20;
+                f = MathHelper.clamp((float) statusEffectInstance.getDuration() / 10.0F / 5.0F * 0.5F, 0.0F, 0.5F) + MathHelper.cos((float) statusEffectInstance.getDuration() * 3.1415927F / 5.0F) * MathHelper.clamp((float) m / 10.0F * 0.25F, 0.0F, 0.25F);
+              }
+              else
+              {
+                f = 1.0F;
+              }
+            }
+
+            Sprite sprite = statusEffectSpriteManager.getSprite(statusEffect);
+            int finalK = k;
+            int finalL = l;
+            list.add(() -> {
+              RenderSystem.setShaderTexture(0, sprite.getAtlasId());
+              RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, f);
+              context.drawSprite(finalK + 3, finalL + 3, 0, 18, 18, sprite);
+            });
           }
-
-          Sprite sprite = statusEffectSpriteManager.getSprite(statusEffect);
-          int finalK = k;
-          int finalL = l;
-          list.add(() -> {
-            RenderSystem.setShaderTexture(0, sprite.getAtlasId());
-            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, f);
-            context.drawSprite(finalK + 3, finalL + 3, 0, 18, 18, sprite);
-          });
         }
-      }
 
-      list.forEach(Runnable::run);
-      RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-    }
-    if (ci.isCancellable())
-    {
-      ci.cancel();
+        list.forEach(Runnable::run);
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+      }
+      if (ci.isCancellable()) ci.cancel();
+
     }
   }
 
@@ -212,7 +213,7 @@ public abstract class InGameHudMixin
       // custom scale
       //RenderSystem.popMatrix();
 
-      callbackInfo.cancel();
+      if (callbackInfo.isCancellable()) callbackInfo.cancel();
     }
 
   }

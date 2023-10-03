@@ -128,19 +128,19 @@ public abstract class MinecraftClientMixin
   @Inject(method = "doItemUse", at = @At("HEAD"), cancellable = true)
   public void onDoItemUseInject(final CallbackInfo callbackInfo)
   {
-    warnBreak(player.getInventory().getMainHandStack());
+    if (mpiClient.getInstance().isMixelPixel()) warnBreak(player.getInventory().getMainHandStack());
   }
 
   @Inject(method = "doAttack", at = @At("HEAD"), cancellable = true)
   public void onDoAttackInject(final CallbackInfoReturnable<Boolean> cir)
   {
-    warnBreak(player.getInventory().getMainHandStack());
+    if (mpiClient.getInstance().isMixelPixel()) warnBreak(player.getInventory().getMainHandStack());
   }
 
   @Inject(method = "handleBlockBreaking", at = @At("HEAD"), cancellable = true)
   public void onHandleBlockBreakingInject(boolean breaking, final CallbackInfo callbackInfo)
   {
-    if (breaking)
+    if (mpiClient.getInstance().isMixelPixel() && breaking)
     {
       warnBreak(player.getInventory().getMainHandStack());
     }
@@ -150,7 +150,7 @@ public abstract class MinecraftClientMixin
   @Inject(method = "joinWorld", at = @At("RETURN"))
   public void joinWorldInject(ClientWorld world, final CallbackInfo callbackInfo)
   {
-    Mpi.LOGGER.warn("WORLD CHANGED TO: " + world.getDimension().toString());
+    // Mpi.LOGGER.warn("WORLD CHANGED TO: " + world.getDimension().toString());
     mpiClient.getInstance().updateTopBar();
   }
 }

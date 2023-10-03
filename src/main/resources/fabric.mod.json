@@ -21,7 +21,7 @@
     ]
   },
   "mixins": [
-    "topbar.mixins.json"
+    "mpi.mixins.json"
   ],
   "depends": {
     "cloth-config2": ">=11.1.106",

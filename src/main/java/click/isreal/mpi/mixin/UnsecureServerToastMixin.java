@@ -25,6 +25,7 @@
 package click.isreal.mpi.mixin;
 
 import click.isreal.mpi.Mpi;
+import click.isreal.mpi.client.mpiClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.toast.Toast;
@@ -44,7 +45,7 @@ public class UnsecureServerToastMixin
   @Inject(method = "draw", at = @At("HEAD"), cancellable = true)
   private void drawInject(DrawContext context, ToastManager manager, long startTime, CallbackInfoReturnable<Toast.Visibility> cir)
   {
-    if (!Mpi.getInstance().unsecureServerWarning() && type == SystemToast.Type.UNSECURE_SERVER_WARNING)
+    if (mpiClient.getInstance().isMixelPixel() && !Mpi.getInstance().unsecureServerWarning() && type == SystemToast.Type.UNSECURE_SERVER_WARNING)
     {
       cir.setReturnValue(Toast.Visibility.HIDE);
     }
