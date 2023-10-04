@@ -24,6 +24,8 @@
 
 package click.isreal.mpi.mixin;
 
+import click.isreal.mpi.Mpi;
+import click.isreal.mpi.client.mpiClient;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -38,6 +40,9 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import java.util.List;
 
 @Environment(EnvType.CLIENT)
 @Mixin(DebugHud.class)
@@ -56,40 +61,29 @@ public class DebugHudMixin
 
   @Shadow
   private void drawMetricsData(DrawContext context, MetricsData metricsData, int x, int width, boolean showFps) {}
-  @Inject(method = "render", at = @At("HEAD"), cancellable = true)
-  public void renderInject(DrawContext context, CallbackInfo ci)
-  {
-    this.client.getProfiler().push("debug");
-    Entity entity = this.client.getCameraEntity();
-    this.blockHit = entity.raycast(20.0, 0.0F, false);
-    this.fluidHit = entity.raycast(20.0, 0.0F, true);
-    context.draw(() -> {
-      this.drawLeftText(context);
-      this.drawRightText(context);
-      if (this.client.options.debugTpsEnabled) {
-        int i = context.getScaledWindowWidth();
-        this.drawMetricsData(context, this.client.getMetricsData(), 0, i / 2, true);
-        IntegratedServer integratedServer = this.client.getServer();
-        if (integratedServer != null) {
-          this.drawMetricsData(context, integratedServer.getMetricsData(), i - Math.min(i / 2, 240), i / 2, false);
-        }
-      }
 
-    });
-    this.client.getProfiler().pop();
-  }
-
-  /*
-  @ModifyVariable(method = "renderLeftText", at = @At("STORE"), ordinal = 1)
-  private int renderLeftTextInject(final int j)
+  @Inject(method = "getLeftText", at = @At("RETURN"), cancellable = true)
+  public void getLeftTextInject(CallbackInfoReturnable<List<String>> cir)
   {
-    return 19;
+    if (mpiClient.getInstance().isMixelPixel())
+    {
+      List<String> leftText = cir.getReturnValue();
+      // add empty lines on top, so we got space for the topbar
+      leftText.add(0, "");
+      leftText.add(0, "");
+      cir.setReturnValue(leftText);
+    }
   }
-
-  @ModifyVariable(method = "renderRightText", at = @At("STORE"), ordinal = 1)
-  private int renderightTextInject(final int j)
+  @Inject(method = "getRightText", at = @At("RETURN"), cancellable = true)
+  public void getRightTextInject(CallbackInfoReturnable<List<String>> cir)
   {
-    return 19;
+    if (mpiClient.getInstance().isMixelPixel())
+    {
+      List<String> rightText = cir.getReturnValue();
+      // add empty lines on top, so we got space for the topbar
+      rightText.add(0, "");
+      rightText.add(0, "");
+      cir.setReturnValue(rightText);
+    }
   }
-*/
 }
