@@ -45,7 +45,7 @@ public class UnsecureServerToastMixin
   @Inject(method = "draw", at = @At("HEAD"), cancellable = true)
   private void drawInject(DrawContext context, ToastManager manager, long startTime, CallbackInfoReturnable<Toast.Visibility> cir)
   {
-    if (mpiClient.getInstance().isMixelPixel() && !Mpi.getInstance().unsecureServerWarning() && type == SystemToast.Type.UNSECURE_SERVER_WARNING)
+    if (mpiClient.getInstance().isMixelPixel() && !Mpi.getInstance().getUnsecureServerWarning() && type == SystemToast.Type.UNSECURE_SERVER_WARNING)
     {
       cir.setReturnValue(Toast.Visibility.HIDE);
     }

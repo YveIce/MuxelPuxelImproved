@@ -43,4 +43,6 @@ public class ModConfig
   public int breakwarnEnabled = 1;
   public int unsecureServerWarning = 0;
   public int hornAudio = 0;
+
+  public int topbarScale = 100;
 }

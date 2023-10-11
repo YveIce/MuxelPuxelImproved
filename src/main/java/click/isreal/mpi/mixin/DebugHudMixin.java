@@ -24,43 +24,25 @@
 
 package click.isreal.mpi.mixin;
 
-import click.isreal.mpi.Mpi;
 import click.isreal.mpi.client.mpiClient;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.DebugHud;
-import net.minecraft.entity.Entity;
-import net.minecraft.server.integrated.IntegratedServer;
-import net.minecraft.util.MetricsData;
-import net.minecraft.util.hit.HitResult;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.List;
-
+// todo: Yve: instead of line spoofing try to use context.getMatrices().translate() to move render-context downwards
 @Environment(EnvType.CLIENT)
 @Mixin(DebugHud.class)
 public class DebugHudMixin
 {
   @Shadow
   private MinecraftClient client;
-  @Shadow
-  private HitResult blockHit;
-  @Shadow
-  private HitResult fluidHit;
-  @Shadow
-  private void drawLeftText(DrawContext context) {}
-  @Shadow
-  private void drawRightText(DrawContext context) {}
-
-  @Shadow
-  private void drawMetricsData(DrawContext context, MetricsData metricsData, int x, int width, boolean showFps) {}
 
   @Inject(method = "getLeftText", at = @At("RETURN"), cancellable = true)
   public void getLeftTextInject(CallbackInfoReturnable<List<String>> cir)
@@ -74,6 +56,7 @@ public class DebugHudMixin
       cir.setReturnValue(leftText);
     }
   }
+
   @Inject(method = "getRightText", at = @At("RETURN"), cancellable = true)
   public void getRightTextInject(CallbackInfoReturnable<List<String>> cir)
   {

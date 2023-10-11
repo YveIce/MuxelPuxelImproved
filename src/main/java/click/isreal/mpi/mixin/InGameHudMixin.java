@@ -162,63 +162,60 @@ public abstract class InGameHudMixin
 
     if (mpiClient.getInstance().isMixelPixel() && mpiClient.getInstance().getWorld() != MixelWorld.OTHER)
     {
-      /* custom scale
-      RenderSystem.pushMatrix();
-      RenderSystem.translatef(2.0F, 8.0F, 0.0F);
-      RenderSystem.scaled(2.0D,2.0D, 1.0D);
-
-       */
-
       int offsetLeft = 2;
       int offsetRight = 2;
+      float scale = (float) Mpi.getInstance().getTopbarScale() / 100.0f;
+      int scaledWidth =  Math.round((float) this.scaledWidth / scale);
+      int scaledHeight = Math.round((float) this.scaledHeight / scale);
+      int lineHeight = this.getTextRenderer().getWrappedLinesHeight("_",1000);
+
+      context.getMatrices().push();
+      context.getMatrices().scale(scale, scale, 0.0f);
+
       String fps = mpiClient.getInstance().getFPS();
       String time = new SimpleDateFormat("HH:mm:ss").format(Calendar.getInstance().getTime());
 
-      context.fill(0, 0, this.scaledWidth, 10, Mpi.getInstance().getColorBackground());
+      context.fill(0, 0, scaledWidth, lineHeight + 1, Mpi.getInstance().getColorBackground());
       this.getTextRenderer().getClass();
 
-      if (Mpi.getInstance().isFpsShow())
+      if (Mpi.getInstance().getFpsShow())
       {
         offsetLeft += this.getTextRenderer().getWidth(Formatting.strip(fps + mpiClient.getInstance().strSplitter));
       }
 
-      if (Mpi.getInstance().isTimeShow())
+      if (Mpi.getInstance().getTimeShow())
       {
         offsetRight += this.getTextRenderer().getWidth(" | 00:00:00");
       }
 
       context.drawText(this.getTextRenderer(), mpiClient.getInstance().strTopLeft, offsetLeft, 1, 0xfff0f0f0, false);
-      int x = this.scaledWidth - this.getTextRenderer().getWidth(Formatting.strip(mpiClient.getInstance().strTopRight)) - offsetRight;
+      int x = scaledWidth - this.getTextRenderer().getWidth(Formatting.strip(mpiClient.getInstance().strTopRight)) - offsetRight;
       context.drawText(this.getTextRenderer(), mpiClient.getInstance().strTopRight, x, 1, 0xfff0f0f0, false);
-      if (Mpi.getInstance().isFpsShow())
+      if (Mpi.getInstance().getFpsShow())
       {
         context.drawText(this.getTextRenderer(), fps + mpiClient.getInstance().strSplitter, 2, 1, Mpi.getInstance().getFpsColor(), false);
       }
-      if (Mpi.getInstance().isTimeShow())
+      if (Mpi.getInstance().getTimeShow())
       {
-        context.drawText(this.getTextRenderer(), mpiClient.getInstance().strSplitter + Formatting.RESET + time, this.scaledWidth - offsetRight, 1, Mpi.getInstance().getTimeColor(), false);
+        context.drawText(this.getTextRenderer(), mpiClient.getInstance().strSplitter + Formatting.RESET + time, scaledWidth - offsetRight, 1, Mpi.getInstance().getTimeColor(), false);
       }
 
       context.drawText(this.getTextRenderer(), mpiClient.getInstance().getScoreboardData().cbPlotName(),
-          this.scaledWidth - this.getTextRenderer().getWidth(Formatting.strip(mpiClient.getInstance().getScoreboardData().cbPlotName())) - 2,
-          this.scaledHeight - 19, 0xfff0f0f0, false);
+          scaledWidth - this.getTextRenderer().getWidth(Formatting.strip(mpiClient.getInstance().getScoreboardData().cbPlotName())) - 2,
+          scaledHeight - 19, 0xfff0f0f0, false);
 
       context.drawText(this.getTextRenderer(), mpiClient.getInstance().getScoreboardData().cbPlotOwner(),
-          this.scaledWidth - this.getTextRenderer().getWidth(Formatting.strip(mpiClient.getInstance().getScoreboardData().cbPlotOwner())) - 2,
-          this.scaledHeight - 10, 0xfff0f0f0, false);
+          scaledWidth - this.getTextRenderer().getWidth(Formatting.strip(mpiClient.getInstance().getScoreboardData().cbPlotOwner())) - 2,
+          scaledHeight - 10, 0xfff0f0f0, false);
 
 
-      //this.getFontRenderer().draw(matrices, TopbarClient.getInstance().DEBUGTEXT, 2, 20, Topbar.getInstance().getTimeColor());
-
-      // custom scale
-      //RenderSystem.popMatrix();
+      context.getMatrices().pop();
 
       if (callbackInfo.isCancellable()) callbackInfo.cancel();
     }
 
   }
 }
-
 
 
 

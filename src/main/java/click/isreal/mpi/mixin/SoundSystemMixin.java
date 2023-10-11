@@ -38,7 +38,7 @@ public class SoundSystemMixin
   @Inject(method = "play", at = @At("HEAD"), cancellable = true)
   public void playInject(SoundInstance sound, CallbackInfo ci)
   {
-    if ((Mpi.getInstance().isStreamerMode() || !Mpi.getInstance().hornAudio()) &&
+    if ((Mpi.getInstance().getStreamerMode() || !Mpi.getInstance().getHornAudio()) &&
         sound != null && sound.getId().toString().startsWith("minecraft:item.goat_horn"))
     {
       //Mpi.LOGGER.info("Blocking Horn sound");

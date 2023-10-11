@@ -105,7 +105,7 @@ public class Mpi implements ModInitializer
     }
   }
 
-  public boolean isStreamerMode()
+  public boolean getStreamerMode()
   {
     return config.streamerMode != 0;
   }
@@ -160,14 +160,14 @@ public class Mpi implements ModInitializer
     saveConfig();
   }
 
-  public boolean isFpsShow()
+  public boolean getFpsShow()
   {
     return config.fpsShow != 0;
   }
 
-  public void setFpsShow(boolean FpsShow)
+  public void setFpsShow(boolean fpsShow)
   {
-    config.fpsShow = FpsShow ? 1 : 0;
+    config.fpsShow = fpsShow ? 1 : 0;
     saveConfig();
   }
 
@@ -182,7 +182,7 @@ public class Mpi implements ModInitializer
     saveConfig();
   }
 
-  public boolean isTimeShow()
+  public boolean getTimeShow()
   {
     return config.timeShow != 0;
   }
@@ -204,7 +204,7 @@ public class Mpi implements ModInitializer
     saveConfig();
   }
 
-  public boolean isPreventFalseCommands()
+  public boolean getPreventFalseCommands()
   {
     return config.preventFalseCommands != 0;
   }
@@ -226,7 +226,7 @@ public class Mpi implements ModInitializer
     saveConfig();
   }
 
-  public boolean isDiscordEnabled()
+  public boolean getDiscordEnabled()
   {
     return config.discordEnabled != 0;
   }
@@ -245,7 +245,7 @@ public class Mpi implements ModInitializer
     saveConfig();
   }
 
-  public boolean isBreakwarnEnabled()
+  public boolean getBreakwarnEnabled()
   {
     return config.breakwarnEnabled != 0;
   }
@@ -256,25 +256,33 @@ public class Mpi implements ModInitializer
     saveConfig();
   }
 
-  public boolean unsecureServerWarning()
+  public boolean getUnsecureServerWarning()
   {
     return config.unsecureServerWarning != 0;
   }
 
   public void setUnsecureServerWarning(boolean secureServerWarning)
   {
-    this.config.unsecureServerWarning = secureServerWarning ? 1 : 0;
+    config.unsecureServerWarning = secureServerWarning ? 1 : 0;
     saveConfig();
   }
 
-  public boolean hornAudio()
+  public boolean getHornAudio()
   {
     return config.hornAudio != 0;
   }
 
   public void setHornAudio(boolean hornAudio)
   {
-    this.config.hornAudio = hornAudio ? 1 : 0;
+    config.hornAudio = hornAudio ? 1 : 0;
+    saveConfig();
+  }
+
+  public int getTopbarScale() { return config.topbarScale; }
+
+  public void setTopbarScale( int topbarScale )
+  {
+    config.topbarScale = topbarScale;
     saveConfig();
   }
 

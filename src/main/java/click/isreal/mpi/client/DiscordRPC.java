@@ -69,7 +69,7 @@ public class DiscordRPC
 
   public void start()
   {
-    doRun = Mpi.getInstance().isDiscordEnabled();
+    doRun = Mpi.getInstance().getDiscordEnabled();
     if (doRun)
     {
       timeStampStart = new Timestamp(System.currentTimeMillis()).getTime();
