@@ -24,7 +24,6 @@
 
 package click.isreal.mpi.mixin;
 
-import click.isreal.mpi.Mpi;
 import click.isreal.mpi.Utils;
 import click.isreal.mpi.client.mpiClient;
 import net.fabricmc.api.EnvType;

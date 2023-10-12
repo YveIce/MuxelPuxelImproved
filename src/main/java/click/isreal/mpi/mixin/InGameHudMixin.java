@@ -26,6 +26,7 @@ package click.isreal.mpi.mixin;
 
 import click.isreal.mpi.Mpi;
 import click.isreal.mpi.client.mpiClient;
+import click.isreal.mpi.config.Config;
 import click.isreal.mpi.domain.MixelWorld;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
@@ -162,9 +163,10 @@ public abstract class InGameHudMixin
 
     if (mpiClient.getInstance().isMixelPixel() && mpiClient.getInstance().getWorld() != MixelWorld.OTHER)
     {
+      final Config config = Config.getInstance();
       int offsetLeft = 2;
       int offsetRight = 2;
-      float scale = (float) Mpi.getInstance().getTopbarScale() / 100.0f;
+      float scale = (float) config.getTopbarScale() / 100.0f;
       int scaledWidth =  Math.round((float) this.scaledWidth / scale);
       int scaledHeight = Math.round((float) this.scaledHeight / scale);
       int lineHeight = this.getTextRenderer().getWrappedLinesHeight("_",1000);
@@ -175,15 +177,15 @@ public abstract class InGameHudMixin
       String fps = mpiClient.getInstance().getFPS();
       String time = new SimpleDateFormat("HH:mm:ss").format(Calendar.getInstance().getTime());
 
-      context.fill(0, 0, scaledWidth, lineHeight + 1, Mpi.getInstance().getColorBackground());
+      context.fill(0, 0, scaledWidth, lineHeight + 1, config.getColorBackground());
       this.getTextRenderer().getClass();
 
-      if (Mpi.getInstance().getFpsShow())
+      if (config.getFpsShow())
       {
         offsetLeft += this.getTextRenderer().getWidth(Formatting.strip(fps + mpiClient.getInstance().strSplitter));
       }
 
-      if (Mpi.getInstance().getTimeShow())
+      if (config.getTimeShow())
       {
         offsetRight += this.getTextRenderer().getWidth(" | 00:00:00");
       }
@@ -191,13 +193,13 @@ public abstract class InGameHudMixin
       context.drawText(this.getTextRenderer(), mpiClient.getInstance().strTopLeft, offsetLeft, 1, 0xfff0f0f0, false);
       int x = scaledWidth - this.getTextRenderer().getWidth(Formatting.strip(mpiClient.getInstance().strTopRight)) - offsetRight;
       context.drawText(this.getTextRenderer(), mpiClient.getInstance().strTopRight, x, 1, 0xfff0f0f0, false);
-      if (Mpi.getInstance().getFpsShow())
+      if (config.getFpsShow())
       {
-        context.drawText(this.getTextRenderer(), fps + mpiClient.getInstance().strSplitter, 2, 1, Mpi.getInstance().getFpsColor(), false);
+        context.drawText(this.getTextRenderer(), fps + mpiClient.getInstance().strSplitter, 2, 1, config.getFpsColor(), false);
       }
-      if (Mpi.getInstance().getTimeShow())
+      if (config.getTimeShow())
       {
-        context.drawText(this.getTextRenderer(), mpiClient.getInstance().strSplitter + Formatting.RESET + time, scaledWidth - offsetRight, 1, Mpi.getInstance().getTimeColor(), false);
+        context.drawText(this.getTextRenderer(), mpiClient.getInstance().strSplitter + Formatting.RESET + time, scaledWidth - offsetRight, 1, config.getTimeColor(), false);
       }
 
       context.drawText(this.getTextRenderer(), mpiClient.getInstance().getScoreboardData().cbPlotName(),

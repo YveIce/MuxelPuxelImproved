@@ -25,6 +25,7 @@
 package click.isreal.mpi.client;
 
 import click.isreal.mpi.Mpi;
+import click.isreal.mpi.config.Config;
 import click.isreal.mpi.domain.UserData;
 import net.arikia.dev.drpc.DiscordEventHandlers;
 import net.arikia.dev.drpc.DiscordRichPresence;
@@ -69,7 +70,7 @@ public class DiscordRPC
 
   public void start()
   {
-    doRun = Mpi.getInstance().getDiscordEnabled();
+    doRun = Config.getInstance().getDiscordEnabled();
     if (doRun)
     {
       timeStampStart = new Timestamp(System.currentTimeMillis()).getTime();

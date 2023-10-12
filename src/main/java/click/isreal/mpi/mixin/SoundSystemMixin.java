@@ -25,6 +25,7 @@
 package click.isreal.mpi.mixin;
 
 import click.isreal.mpi.Mpi;
+import click.isreal.mpi.config.Config;
 import net.minecraft.client.sound.SoundInstance;
 import net.minecraft.client.sound.SoundSystem;
 import org.spongepowered.asm.mixin.Mixin;
@@ -38,7 +39,7 @@ public class SoundSystemMixin
   @Inject(method = "play", at = @At("HEAD"), cancellable = true)
   public void playInject(SoundInstance sound, CallbackInfo ci)
   {
-    if ((Mpi.getInstance().getStreamerMode() || !Mpi.getInstance().getHornAudio()) &&
+    if ((Config.getInstance().getStreamerMode() || !Config.getInstance().getHornAudio()) &&
         sound != null && sound.getId().toString().startsWith("minecraft:item.goat_horn"))
     {
       //Mpi.LOGGER.info("Blocking Horn sound");

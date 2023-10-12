@@ -22,24 +22,26 @@
  * SOFTWARE.
  */
 
-package click.isreal.mpi.mixin;
+package click.isreal.mpi.config;
 
-import click.isreal.mpi.Mpi;
-import click.isreal.mpi.config.Config;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.screen.SplashOverlay;
-import net.minecraft.util.Identifier;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
-
-import java.util.function.IntSupplier;
-
-@Environment(EnvType.CLIENT)
-@Mixin(SplashOverlay.class)
-public class SplashOverlayMixin
+public class ConfigData
 {
-  @Shadow
-  private static final IntSupplier BRAND_ARGB = () -> Config.getInstance().getLoadscreenColor();
-  private static final Identifier LOGO = new Identifier("textures/gui/title/mojangstudios.png");
+  // we are using int instead of boolean, where 0 means FALSE, anything else TRUE
+  // because of GSON can't handle booleans on it's on correctly
+  public int streamerMode = 0;
+  public int colorBackground = 0xff000000;
+  public int effectIconSize = 10;
+  public int effectColorPositive = 0xff00ff00;
+  public int effectColorNegative = 0xffff0000;
+  public int fpsShow = 1;
+  public int fpsColor = 0xff808080;
+  public int timeShow = 1;
+  public int timeColor = 0xffff007D;
+  public int preventFalseCommands = 0;
+  public int loadscreenColor = 0xffff007D;
+  public int discordEnabled = 1;
+  public int breakwarnEnabled = 1;
+  public int unsecureServerWarning = 0;
+  public int hornAudio = 0;
+  public int topbarScale = 100;
 }
