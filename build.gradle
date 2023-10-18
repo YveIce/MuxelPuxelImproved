@@ -11,6 +11,10 @@ version = project.mod_version
 group = project.maven_group
 //val clothconfigVersion: String by project
 
+loom {
+    accessWidenerPath = file("src/main/resources/mpi.accesswidener")
+}
+
 repositories {
     maven { url "https://maven.shedaniel.me/" }
     maven { url "https://maven.terraformersmc.com/" }

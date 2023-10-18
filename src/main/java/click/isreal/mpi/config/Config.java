@@ -261,4 +261,11 @@ public class Config
     configData.topbarScale = topbarScale;
     save();
   }
+  public String getTitlescreenTheme() { return configData.titleScreenTheme; }
+
+  public void setTitlescreenTheme( String titlescreenTheme )
+  {
+    configData.titleScreenTheme = titlescreenTheme.trim().toLowerCase();
+    save();
+  }
 }

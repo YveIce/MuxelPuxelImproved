@@ -37,14 +37,21 @@ import me.shedaniel.clothconfig2.api.ConfigEntryBuilder;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.option.KeyBinding;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
+import org.lwjgl.glfw.GLFW;
+
+import java.util.Arrays;
+import java.util.List;
 
 @Environment(EnvType.CLIENT)
 public class mpiClient implements ClientModInitializer
@@ -60,6 +67,7 @@ public class mpiClient implements ClientModInitializer
   public String strTopLeft = "";
   public String strTopRight = "";
   public DiscordRPC dc;
+  KeyBinding panoramicScreenshotKeybind = KeyBindingHelper.registerKeyBinding(new KeyBinding("key.panoramic_screenshot", GLFW.GLFW_KEY_F9, KeyBinding.MISC_CATEGORY));
   private boolean _isMixel = false;
 
   {
@@ -103,6 +111,16 @@ public class mpiClient implements ClientModInitializer
     {
       Mpi.LOGGER.warn("Error starting DC: \n" + e.getMessage());
     }
+    Shaders.registerShaders();
+    ClientTickEvents.END_CLIENT_TICK.register(client -> {
+      while (panoramicScreenshotKeybind.wasPressed())
+      {
+        if (client.player != null)
+        {
+          client.player.sendMessage(Screenshoot.takePanorama(client.runDirectory, 512 * 8, 512 * 8));
+        }
+      }
+    });
   }
 
   private void loadInjections() throws Exception
@@ -253,10 +271,25 @@ public class mpiClient implements ClientModInitializer
       tweaks.addEntry(entryBuilder.startBooleanToggle(Text.literal("Toggle Unsecure Server Warning"), config.getUnsecureServerWarning()).setDefaultValue(false).setTooltip(Text.literal("If disabled, no Chat couldn't be verified message is displayed")).setSaveConsumer(config::setUnsecureServerWarning).build());
       tweaks.addEntry(entryBuilder.startBooleanToggle(Text.literal("Toggle Horn Audio"), config.getHornAudio()).setDefaultValue(false).setTooltip(Text.literal("If disabled, horn sounds are blocked for your client")).setSaveConsumer(config::setHornAudio).build());
 
+      ConfigCategory titlescreen = builder.getOrCreateCategory(Text.literal(Formatting.AQUA + "Titlescreen"));
+      titlescreen.setBackground(Identifier.tryParse("minecraft:textures/block/warped_nylium.png"));
+      final List<String> titlescreenThemes = Arrays.asList("Default", "Magicsky", "Space", "EvilYoungFlesh");
+      titlescreen.addEntry(
+          entryBuilder
+              .startStringDropdownMenu(Text.of("Titlescreen Theme"), config.getTitlescreenTheme())
+              .setSelections((List<String>)Arrays.asList("default", "magicclouds", "space", "evilyoungflesh"))
+              .setDefaultValue("")
+              .setTooltip(Text.literal("Select the default or a fancy background for the titlescreen."))
+              .setSaveConsumer(config::setTitlescreenTheme)
+              .build()
+      );
+
+
       builder.transparentBackground();
 
       return builder.build();
     }
     return null;
   }
+
 }

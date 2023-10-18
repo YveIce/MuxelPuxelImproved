@@ -3,7 +3,8 @@
   "minVersion": "0.8",
   "package": "click.isreal.mpi.mixin",
   "compatibilityLevel": "JAVA_17",
-  "mixins": [],
+  "mixins": [
+  ],
   "client": [
     "InGameHudMixin",
     "ScoreboardMixins",
@@ -15,7 +16,9 @@
     "TooltipBackgroundRendererMixin",
     "SplashOverlayMixin",
     "UnsecureServerToastMixin",
-    "SoundSystemMixin"
+    "SoundSystemMixin",
+    "TitleScreenMixin",
+    "RotatingCubeMapRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

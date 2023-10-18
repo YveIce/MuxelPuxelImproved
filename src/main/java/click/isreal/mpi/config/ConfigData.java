@@ -44,4 +44,6 @@ public class ConfigData
   public int unsecureServerWarning = 0;
   public int hornAudio = 0;
   public int topbarScale = 100;
+
+  public String titleScreenTheme = "default";
 }

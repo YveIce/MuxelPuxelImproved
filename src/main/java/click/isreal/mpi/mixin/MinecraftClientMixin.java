@@ -47,6 +47,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.io.File;
+
 @Environment(EnvType.CLIENT)
 @Mixin(MinecraftClient.class)
 public abstract class MinecraftClientMixin
@@ -152,4 +154,5 @@ public abstract class MinecraftClientMixin
     // Mpi.LOGGER.warn("WORLD CHANGED TO: " + world.getDimension().toString());
     mpiClient.getInstance().updateTopBar();
   }
+
 }

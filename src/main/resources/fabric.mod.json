@@ -23,6 +23,7 @@
   "mixins": [
     "mpi.mixins.json"
   ],
+  "accessWidener": "mpi.accesswidener",
   "depends": {
     "cloth-config2": ">=11.1.106",
     "fabricloader": ">=0.14.22",
