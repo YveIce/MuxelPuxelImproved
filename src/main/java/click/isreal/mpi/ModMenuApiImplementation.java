@@ -24,7 +24,7 @@
 
 package click.isreal.mpi;
 
-import click.isreal.mpi.client.mpiClient;
+import click.isreal.mpi.config.ConfigScreen;
 import com.terraformersmc.modmenu.api.ConfigScreenFactory;
 import com.terraformersmc.modmenu.api.ModMenuApi;
 
@@ -33,6 +33,6 @@ public class ModMenuApiImplementation implements ModMenuApi
   @Override
   public ConfigScreenFactory<?> getModConfigScreenFactory()
   {
-    return parent -> mpiClient.getInstance().createConfigScreen(parent);
+    return parent -> ConfigScreen.getInstance().createConfigScreen(parent);
   }
 }

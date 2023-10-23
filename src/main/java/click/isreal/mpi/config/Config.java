@@ -48,6 +48,7 @@ public class Config
     configJson = new GsonBuilder().setPrettyPrinting().create();
     load();
   }
+
   public static Config getInstance()
   {
     return instance;
@@ -65,6 +66,7 @@ public class Config
       LOGGER.log(Level.WARN, "Could not load config file. Exception: " + e.getMessage());
     }
   }
+
   public void save()
   {
     try
@@ -89,50 +91,6 @@ public class Config
   public void setStreamerMode(boolean streamerMode)
   {
     configData.streamerMode = streamerMode ? 1 : 0;
-    save();
-  }
-
-  public int getColorBackground()
-  {
-    return configData.colorBackground;
-  }
-
-  public void setColorBackground(int colorBackground)
-  {
-    configData.colorBackground = colorBackground;
-    save();
-  }
-
-  public int getEffectIconSize()
-  {
-    return Math.min(32, Math.max(6, configData.effectIconSize));
-  }
-
-  public void setEffectIconSize(int effectIconSize)
-  {
-    configData.effectIconSize = Math.min(32, Math.max(6, effectIconSize));
-    save();
-  }
-
-  public int getEffectColorPositive()
-  {
-    return configData.effectColorPositive;
-  }
-
-  public void setEffectColorPositive(int color)
-  {
-    configData.effectColorPositive = color;
-    save();
-  }
-
-  public int getEffectColorNegative()
-  {
-    return configData.effectColorNegative;
-  }
-
-  public void setEffectColorNegative(int color)
-  {
-    configData.effectColorNegative = color;
     save();
   }
 
@@ -254,18 +212,238 @@ public class Config
     save();
   }
 
-  public int getTopbarScale() { return configData.topbarScale; }
-
-  public void setTopbarScale( int topbarScale )
+  public String getTitlescreenTheme()
   {
-    configData.topbarScale = topbarScale;
-    save();
+    return configData.titleScreenTheme;
   }
-  public String getTitlescreenTheme() { return configData.titleScreenTheme; }
 
-  public void setTitlescreenTheme( String titlescreenTheme )
+  public void setTitlescreenTheme(String titlescreenTheme)
   {
     configData.titleScreenTheme = titlescreenTheme.trim().toLowerCase();
+    save();
+  }
+
+  public int getTopbarScale()
+  {
+    return configData.barScale;
+  }
+
+  public void setTopbarScale(int topbarScale)
+  {
+    configData.barScale = topbarScale;
+    save();
+  }
+
+  public boolean getBarTop1enabled()
+  {
+    return configData.barTop1enabled != 0;
+  }
+
+  public void setBarTop1enabled(boolean barTop1enabled)
+  {
+    configData.barTop1enabled = barTop1enabled ? 1 : 0;
+    save();
+  }
+
+  public boolean getBarTop2enabled()
+  {
+    return configData.barTop2enabled != 0;
+  }
+
+  public void setBarTop2enabled(boolean barTop2enabled)
+  {
+    configData.barTop2enabled = barTop2enabled ? 1 : 0;
+    save();
+  }
+
+  public boolean getBarBottom1enabled()
+  {
+    return configData.barBottom1enabled != 0;
+  }
+
+  public void setBarBottom1enabled(boolean barBottom1enabled)
+  {
+    configData.barBottom1enabled = barBottom1enabled ? 1 : 0;
+    save();
+  }
+
+  public boolean getBarBottom2enabled()
+  {
+    return configData.barBottom1enabled != 0;
+  }
+
+  public void setBarBottom2enabled(boolean barBottom2enabled)
+  {
+    configData.barBottom1enabled = barBottom2enabled ? 1 : 0;
+    save();
+  }
+
+  public int getBarTop1Color()
+  {
+    return configData.barTop1Color;
+  }
+
+  public void setBarTop1Color(int barTop1Color)
+  {
+    configData.barTop1Color = barTop1Color;
+    save();
+  }
+
+  public int getBarTop2Color()
+  {
+    return configData.barTop2Color;
+  }
+
+  public void setBarTop2Color(int barTop2Color)
+  {
+    configData.barTop2Color = barTop2Color;
+    save();
+  }
+
+  public int getBarBottom1Color()
+  {
+    return configData.barBottom1Color;
+  }
+
+  public void setBarBottom1Color(int barBottom1Color)
+  {
+    configData.barBottom1Color = barBottom1Color;
+    save();
+  }
+
+  public int getBarBottom2Color()
+  {
+    return configData.barBottom2Color;
+  }
+
+  public void setBarBottom2Color(int barBottom2Color)
+  {
+    configData.barBottom2Color = barBottom2Color;
+    save();
+  }
+
+  public String getBarTop1LeftPattern()
+  {
+    return configData.barTop1LeftPattern;
+  }
+
+  public void setBarTop1LeftPattern(String barTop1LeftPattern)
+  {
+    configData.barTop1LeftPattern = barTop1LeftPattern;
+    save();
+  }
+  public String getBarTop1CenterPattern()
+  {
+    return configData.barTop1CenterPattern;
+  }
+
+  public void setBarTop1CenterPattern(String barTop1CenterPattern)
+  {
+    configData.barTop1CenterPattern = barTop1CenterPattern;
+    save();
+  }
+
+  public String getBarTop1RightPattern()
+  {
+    return configData.barTop1RightPattern;
+  }
+
+  public void setBarTop1RightPattern(String barTop1RightPattern)
+  {
+    configData.barTop1RightPattern = barTop1RightPattern;
+    save();
+  }
+  public String getBarTop2LeftPattern()
+  {
+    return configData.barTop2LeftPattern;
+  }
+
+  public void setBarTop2LeftPattern(String barTop2LeftPattern)
+  {
+    configData.barTop2LeftPattern = barTop2LeftPattern;
+    save();
+  }
+  public String getBarTop2CenterPattern()
+  {
+    return configData.barTop2CenterPattern;
+  }
+
+  public void setBarTop2CenterPattern(String barTop2CenterPattern)
+  {
+    configData.barTop2CenterPattern = barTop2CenterPattern;
+    save();
+  }
+
+  public String getBarTop2RightPattern()
+  {
+    return configData.barTop2RightPattern;
+  }
+
+  public void setBarTop2RightPattern(String barTop2RightPattern)
+  {
+    configData.barTop2RightPattern = barTop2RightPattern;
+    save();
+  }
+public String getBarBottom1LeftPattern()
+{
+  return configData.barBottom1LeftPattern;
+}
+
+  public void setBarBottom1LeftPattern(String barBottom1LeftPattern)
+  {
+    configData.barBottom1LeftPattern = barBottom1LeftPattern;
+    save();
+  }
+  public String getBarBottom1CenterPattern()
+  {
+    return configData.barBottom1CenterPattern;
+  }
+
+  public void setBarBottom1CenterPattern(String barBottom1CenterPattern)
+  {
+    configData.barBottom1CenterPattern = barBottom1CenterPattern;
+    save();
+  }
+
+  public String getBarBottom1RightPattern()
+  {
+    return configData.barBottom1RightPattern;
+  }
+
+  public void setBarBottom1RightPattern(String barBottom1RightPattern)
+  {
+    configData.barBottom1RightPattern = barBottom1RightPattern;
+    save();
+  }
+  public String getBarBottom2LeftPattern()
+  {
+    return configData.barBottom2LeftPattern;
+  }
+
+  public void setBarBottom2LeftPattern(String barBottom2LeftPattern)
+  {
+    configData.barBottom2LeftPattern = barBottom2LeftPattern;
+    save();
+  }
+  public String getBarBottom2CenterPattern()
+  {
+    return configData.barBottom2CenterPattern;
+  }
+
+  public void setBarBottom2CenterPattern(String barBottom2CenterPattern)
+  {
+    configData.barBottom2CenterPattern = barBottom2CenterPattern;
+    save();
+  }
+
+  public String getBarBottom2RightPattern()
+  {
+    return configData.barBottom2RightPattern;
+  }
+
+  public void setBarBottom2RightPattern(String barBottom2RightPattern)
+  {
+    configData.barBottom2RightPattern = barBottom2RightPattern;
     save();
   }
 }

@@ -38,6 +38,7 @@ dependencies {
 
     modImplementation "com.github.Vatuu:discord-rpc:1.6.2"
     modImplementation "com.github.Vatuu:discord-rpc-binaries:3.4.0"
+    implementation group: 'org.jsoup', name: 'jsoup', version: '1.16.1'
 }
 
 processResources {

@@ -22,24 +22,22 @@
  * SOFTWARE.
  */
 
-package click.isreal.mpi;
+package click.isreal.mpi.client;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gui.widget.ScrollableTextWidget;
+import net.minecraft.text.Text;
 
-public class BarHud
+// YVE: yes, minecraft code suxs so hard, that we have to do this stupid shit. Blame them, not me!
+public class MpiScrollableTextWidget extends ScrollableTextWidget
 {
-  private final MinecraftClient client;
-  private final boolean isTopbar;
-
-  public BarHud(MinecraftClient client, boolean isTopbar)
+  public MpiScrollableTextWidget(int x, int y, int width, int height, Text message, TextRenderer textRenderer)
   {
-    this.client = client;
-    this.isTopbar = isTopbar;
+    super(x, y, width, height, message, textRenderer);
   }
 
-  public void render(DrawContext context)
+  public void setHeight(int height)
   {
-
+    this.height = height;
   }
 }

@@ -25,6 +25,7 @@
 package click.isreal.mpi.mixin;
 
 import click.isreal.mpi.Mpi;
+import click.isreal.mpi.client.DataManager;
 import click.isreal.mpi.client.mpiClient;
 import click.isreal.mpi.config.Config;
 import click.isreal.mpi.domain.MixelWorld;
@@ -45,6 +46,9 @@ import net.minecraft.client.texture.StatusEffectSpriteManager;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.scoreboard.ScoreboardObjective;
+import net.minecraft.text.Text;
+import net.minecraft.text.TextColor;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.MathHelper;
 import org.spongepowered.asm.mixin.Final;
@@ -177,7 +181,7 @@ public abstract class InGameHudMixin
       String fps = mpiClient.getInstance().getFPS();
       String time = new SimpleDateFormat("HH:mm:ss").format(Calendar.getInstance().getTime());
 
-      context.fill(0, 0, scaledWidth, lineHeight + 1, config.getColorBackground());
+      context.fill(0, 0, scaledWidth, lineHeight + 1, config.getBarTop1Color());
       this.getTextRenderer().getClass();
 
       if (config.getFpsShow())
@@ -210,6 +214,10 @@ public abstract class InGameHudMixin
           scaledWidth - this.getTextRenderer().getWidth(Formatting.strip(mpiClient.getInstance().getScoreboardData().cbPlotOwner())) - 2,
           scaledHeight - 10, 0xfff0f0f0, false);
 
+
+      DataManager.getInstance().tick();
+      Text compass = Text.of(DataManager.COMPASS.value());
+      context.drawText(this.getTextRenderer(),compass,200,30, Colors.RED,true);
 
       context.getMatrices().pop();
 

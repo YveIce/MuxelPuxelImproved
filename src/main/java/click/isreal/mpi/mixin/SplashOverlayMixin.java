@@ -28,11 +28,18 @@ import click.isreal.mpi.Mpi;
 import click.isreal.mpi.config.Config;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.SplashOverlay;
+import net.minecraft.resource.InputSupplier;
+import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.io.InputStream;
 import java.util.function.IntSupplier;
 
 @Environment(EnvType.CLIENT)
@@ -41,5 +48,19 @@ public class SplashOverlayMixin
 {
   @Shadow
   private static final IntSupplier BRAND_ARGB = () -> Config.getInstance().getLoadscreenColor();
-  private static final Identifier LOGO = new Identifier("textures/gui/title/mojangstudios.png");
+  //todo: fixme: we need to load our own texture early. I think DefaultResourcePack functions needs to be patched
+  @Shadow
+  private static Identifier LOGO = new Identifier("textures/gui/title/mojangstudios.png");
+
+  @Inject(method ="init", at = @At("HEAD"))
+  private static void initInject(MinecraftClient client, CallbackInfo ci)
+  {
+    /*
+    InputSupplier<InputStream> inputSupplier = client.getDefaultResourcePack().open(ResourceType.CLIENT_RESOURCES, new Identifier("mpi","textures/gui/title/splashlogo.png"));
+    if (null != inputSupplier)
+    {
+      LOGO = new Identifier("mpi","textures/gui/title/splashlogo.png");
+    }
+     */
+  }
 }

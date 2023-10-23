@@ -31,27 +31,22 @@ import click.isreal.mpi.domain.MixelWorldType;
 import click.isreal.mpi.domain.UserData;
 import click.isreal.mpi.domain.Winter22Event;
 import click.isreal.mpi.events.MixelJoinCallback;
-import me.shedaniel.clothconfig2.api.ConfigBuilder;
-import me.shedaniel.clothconfig2.api.ConfigCategory;
-import me.shedaniel.clothconfig2.api.ConfigEntryBuilder;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.option.KeyBinding;
-import net.minecraft.text.Text;
+import net.minecraft.resource.InputSupplier;
+import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 import org.lwjgl.glfw.GLFW;
 
-import java.util.Arrays;
-import java.util.List;
+import java.io.InputStream;
 
 @Environment(EnvType.CLIENT)
 public class mpiClient implements ClientModInitializer
@@ -103,6 +98,7 @@ public class mpiClient implements ClientModInitializer
     }
     this.initEventCallbacks();
     System.out.println("\\u001b[0;35mMuxelpuxel Improved: started at " + java.time.LocalDateTime.now());
+
     try
     {
       dc = new DiscordRPC();
@@ -243,53 +239,5 @@ public class mpiClient implements ClientModInitializer
     }
   }
 
-  public Screen createConfigScreen(Screen parent)
-  {
-    if (FabricLoader.getInstance().isModLoaded("cloth-config2"))
-    {
-
-      ConfigBuilder builder = ConfigBuilder.create().setParentScreen(parent).setTitle(
-          Text.literal(Formatting.WHITE + "☠ " + Formatting.LIGHT_PURPLE + "" + Formatting.BOLD + "MuxelPuxel Improved" + Formatting.WHITE + " ☠"));
-      ConfigEntryBuilder entryBuilder = builder.entryBuilder();
-
-      ConfigCategory general = builder.getOrCreateCategory(Text.literal(Formatting.LIGHT_PURPLE + "General"));
-      general.setBackground(Identifier.tryParse("minecraft:textures/block/stripped_crimson_stem.png"));
-      general.addEntry(entryBuilder.startIntSlider(Text.literal("Topbar Scale"), config.getTopbarScale(), 10, 200).setDefaultValue(100).setTooltip(Text.literal("Scale of topbar in percent")).setSaveConsumer(config::setTopbarScale).build());
-      general.addEntry(entryBuilder.startColorField(Text.literal("Color Background"), config.getColorBackground()).setDefaultValue(0xf0000000).setAlphaMode(true).setTooltip(Text.literal("Background color of the topbar in Hex. (#AARRGGBB)")).setSaveConsumer(config::setColorBackground).build());
-      general.addEntry(entryBuilder.startBooleanToggle(Text.literal("Show FPS"), config.getFpsShow()).setDefaultValue(true).setTooltip(Text.literal("If enabled, FPS is shown left-most on the topbar.")).setSaveConsumer(config::setFpsShow).build());
-      general.addEntry(entryBuilder.startColorField(Text.literal("Color FPS"), config.getFpsColor()).setDefaultValue(0xff808080).setAlphaMode(true).setTooltip(Text.literal("Sets the textcolor of FPS in Hex. (#AARRGGBB)")).setSaveConsumer(config::setFpsColor).build());
-      general.addEntry(entryBuilder.startBooleanToggle(Text.literal("Show Time"), config.getTimeShow()).setDefaultValue(true).setTooltip(Text.literal("If enabled, Time of your computer is shown right-most on the topbar.")).setSaveConsumer(config::setTimeShow).build());
-      general.addEntry(entryBuilder.startColorField(Text.literal("Color Time"), config.getTimeColor()).setDefaultValue(0xff808080).setAlphaMode(true).setTooltip(Text.literal("Sets the textcolor of Time in Hex. (#AARRGGBB)")).setSaveConsumer(config::setTimeColor).build());
-      general.addEntry(entryBuilder.startColorField(Text.literal("Color Loading Screen"), config.getLoadscreenColor()).setDefaultValue(0xffff007d).setAlphaMode(true).setTooltip(Text.literal("Sets the background color of the loadingscreen(the one with the mojang logo) in Hex. (#AARRGGBB)")).setSaveConsumer(config::setLoadscreenColor).build());
-      general.addEntry(entryBuilder.startBooleanToggle(Text.literal("Streamer-Mode"), config.getStreamerMode()).setDefaultValue(false).setTooltip(Text.literal("If enabled, your ingame money value would be hidden on topbar.")).setSaveConsumer(config::setStreamerMode).build());
-      general.addEntry(entryBuilder.startBooleanToggle(Text.literal("Enable Discord"), config.getDiscordEnabled()).setDefaultValue(true).setTooltip(Text.literal("If enabled and Discord app is running, your profil will show that you are playing on MixelPixel.")).setSaveConsumer(config::setDiscordEnabled).build());
-
-      ConfigCategory tweaks = builder.getOrCreateCategory(Text.literal(Formatting.GOLD + "Tweaks"));
-      tweaks.setBackground(Identifier.tryParse("minecraft:textures/block/soul_sand.png"));
-      tweaks.addEntry(entryBuilder.startBooleanToggle(Text.literal("Prevent sending false commands"), config.getPreventFalseCommands()).setDefaultValue(true).setTooltip(Text.literal("Prevents sending Chat-Messages starting with '7' or 't/'. As this are the most common typo errors.")).setSaveConsumer(config::setPreventFalseCommands).build());
-      tweaks.addEntry(entryBuilder.startBooleanToggle(Text.literal("Enable Tool break warning"), config.getBreakwarnEnabled()).setDefaultValue(true).setTooltip(Text.literal("If enabled, a warning is displayed if the tool being used is about to be destroyed.")).setSaveConsumer(config::setBreakwarnEnabled).build());
-      tweaks.addEntry(entryBuilder.startBooleanToggle(Text.literal("Toggle Unsecure Server Warning"), config.getUnsecureServerWarning()).setDefaultValue(false).setTooltip(Text.literal("If disabled, no Chat couldn't be verified message is displayed")).setSaveConsumer(config::setUnsecureServerWarning).build());
-      tweaks.addEntry(entryBuilder.startBooleanToggle(Text.literal("Toggle Horn Audio"), config.getHornAudio()).setDefaultValue(false).setTooltip(Text.literal("If disabled, horn sounds are blocked for your client")).setSaveConsumer(config::setHornAudio).build());
-
-      ConfigCategory titlescreen = builder.getOrCreateCategory(Text.literal(Formatting.AQUA + "Titlescreen"));
-      titlescreen.setBackground(Identifier.tryParse("minecraft:textures/block/warped_nylium.png"));
-      final List<String> titlescreenThemes = Arrays.asList("Default", "Magicsky", "Space", "EvilYoungFlesh");
-      titlescreen.addEntry(
-          entryBuilder
-              .startStringDropdownMenu(Text.of("Titlescreen Theme"), config.getTitlescreenTheme())
-              .setSelections((List<String>)Arrays.asList("default", "magicclouds", "space", "evilyoungflesh"))
-              .setDefaultValue("")
-              .setTooltip(Text.literal("Select the default or a fancy background for the titlescreen."))
-              .setSaveConsumer(config::setTitlescreenTheme)
-              .build()
-      );
-
-
-      builder.transparentBackground();
-
-      return builder.build();
-    }
-    return null;
-  }
 
 }
