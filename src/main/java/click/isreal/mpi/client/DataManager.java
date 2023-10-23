@@ -98,9 +98,7 @@ public class DataManager
           Character.isLetter(inputText.charAt(index + 1)) &&
           Character.isLetter(inputText.charAt(index + 2)))
       {
-        result.add(Text.literal(currentText));
-        result.add(resolvePattern(inputText.substring(index, index + 3)));
-        currentText = "";
+        currentText += resolvePattern(inputText.substring(index, index + 3));
         index += 3;
       }
       else
@@ -113,17 +111,17 @@ public class DataManager
     return result;
   }
 
-  private Text resolvePattern(String pattern)
+  private String resolvePattern(String pattern)
   {
     for (Map.Entry<DataId, DataEntry> mapEntry : dataList.entrySet())
     {
       DataEntry entry = mapEntry.getValue();
       if (entry.pattern().equals(pattern))
       {
-        return Text.literal(entry.value());
+        return entry.value();
       }
     }
-    return Text.literal(pattern);
+    return pattern;
   }
 
   // update only all values, that can change every frame, for better performance
