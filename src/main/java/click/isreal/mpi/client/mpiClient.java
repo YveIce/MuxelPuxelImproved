@@ -55,6 +55,7 @@ public class mpiClient implements ClientModInitializer
   private static mpiClient instance;
   private final MinecraftClient client = MinecraftClient.getInstance();
   private final Config config = Config.getInstance();
+  private final DataManager dataManager = DataManager.getInstance();
   private final UserData scoreboardData = new UserData(MixelWorld.OTHER);
   // Storage for all TopBar Strings (Parts), so we only need to build/change them,
   // when things really changed. Saves some time in gui-render thread

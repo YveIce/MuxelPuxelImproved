@@ -25,6 +25,7 @@
 package click.isreal.mpi.mixin;
 
 import click.isreal.mpi.Mpi;
+import click.isreal.mpi.client.BarHud;
 import click.isreal.mpi.client.DataManager;
 import click.isreal.mpi.client.mpiClient;
 import click.isreal.mpi.config.Config;
@@ -41,6 +42,7 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
+import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.StatusEffectSpriteManager;
 import net.minecraft.entity.effect.StatusEffect;
@@ -66,23 +68,28 @@ import java.util.List;
 @Mixin(InGameHud.class)
 public abstract class InGameHudMixin
 {
-
-  @Shadow
-  private int scaledWidth;
   @Shadow
   @Final
   private MinecraftClient client;
-  @Shadow
-  private int scaledHeight;
 
-  @Shadow
-  public abstract TextRenderer getTextRenderer();
+  private BarHud barHud;
 
+  @Inject(method = "<init>", at=@At("RETURN"))
+  private void initInject(MinecraftClient client, ItemRenderer itemRenderer, CallbackInfo ci)
+  {
+    this.barHud = new BarHud(client);
+  }
+  @Inject(method = "render", at =@At(value = "INVOKE",target = "Lnet/minecraft/client/gui/hud/InGameHud;renderCrosshair(Lnet/minecraft/client/gui/DrawContext;)V"))
+  public void renderInject(DrawContext context, float tickDelta, CallbackInfo ci)
+  {
+    this.barHud.render(context);
+  }
   @Inject(method = "renderStatusEffectOverlay", at = @At("HEAD"), cancellable = true)
   public void renderStatusEffectOverlayInject(DrawContext context, final CallbackInfo ci)
   {
     if (mpiClient.getInstance().isMixelPixel())
     {
+      /*
       Collection<StatusEffectInstance> collection = this.client.player.getStatusEffects();
       if (!collection.isEmpty())
       {
@@ -157,7 +164,7 @@ public abstract class InGameHudMixin
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
       }
       if (ci.isCancellable()) ci.cancel();
-
+    */
     }
   }
 
@@ -167,6 +174,9 @@ public abstract class InGameHudMixin
 
     if (mpiClient.getInstance().isMixelPixel() && mpiClient.getInstance().getWorld() != MixelWorld.OTHER)
     {
+
+
+/*
       final Config config = Config.getInstance();
       int offsetLeft = 2;
       int offsetRight = 2;
@@ -220,7 +230,7 @@ public abstract class InGameHudMixin
       context.drawText(this.getTextRenderer(),compass,200,30, Colors.RED,true);
 
       context.getMatrices().pop();
-
+*/
       if (callbackInfo.isCancellable()) callbackInfo.cancel();
     }
 

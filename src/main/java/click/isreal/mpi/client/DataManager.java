@@ -25,154 +25,128 @@
 package click.isreal.mpi.client;
 
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.entity.Entity;
+import net.minecraft.registry.Registries;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.hit.HitResult;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.chunk.WorldChunk;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
+import java.util.regex.Pattern;
 
-import static net.minecraft.text.StringVisitable.concat;
 import static net.minecraft.util.math.MathHelper.wrapDegrees;
 
 public class DataManager
 {
   private static DataManager instance;
-  static public DataEntry COMPASS =
-      new DataEntry("Kompass", "Zeigt dir die Himmelsrichtung in die du blickst.", "%cp", "?");
-  static public DataEntry EXP =
-      new DataEntry("Exp", "Deine Erfahrungspunkte.", "%xp", "0");
-  //private static final Map<EntryId, Entry> dataMap = new HashMap<>();
-  static public DataEntry FPS =
-      new DataEntry("FPS", "Frames pro Sekunde.", "%fs", "0");
-  static public DataEntry HEALLEVEL =
-      new DataEntry("Gesundheit", "Dein Gesundheitslevel.", "%hl", "0");
-  static public DataEntry HEALMAX =
-      new DataEntry("Max. Gesundheit", "Dein maximales Gesundheitslevel.", "%hm", "0");
-  static public DataEntry HEALBAR =
-      new DataEntry("Gesundheits Herzen", "Zeigt dir deine Gesundheit als Herzen an.", "%hb", "0");
-  static public DataEntry HUNGERLEVEL =
-      new DataEntry("Hunger", "Zeigt dir deine Nahrungspunkte an.", "%fl", "0");
-  static public DataEntry HUNGERMAX =
-      new DataEntry("Max. Hunger", "Deine maximalen Nahrungspunkte.", "%fm", "0");
-  static public DataEntry HUNGERBAR =
-      new DataEntry("Hunger", "Zeigt dir deine Hunger als Fleischkeulen an.", "%fb", "0");
-  static public DataEntry LOOKATBLOCK =
-      new DataEntry("Block", "Zeigt dir den Typ des Blockes an, auf den du schaust.", "%lb", "0");
-  static public DataEntry LOOKATLIGHT =
-      new DataEntry("Light", "Zeigt dir den Helligkeitswert an, von dem Block auf den du schaust.", "%ll", "0");
-  // YVE: COMPAS, EXP, FPS, HEAL, HEALMAX, HEARTS, HUNGER, LOOKATBLOCK, LOOKATLIGHT, MCTIME, MONEY, POSX, POSY, POSz, SERVER, TIME, TOOLDEMAGE, TOOLMAXDEMAGE, WORLD
   private final MinecraftClient client = MinecraftClient.getInstance();
-  private final List<DataEntry> DataList = List.of(COMPASS, EXP, FPS, HEALBAR, HEALLEVEL, HEALMAX, HUNGERBAR, HUNGERLEVEL, HUNGERMAX, LOOKATBLOCK, LOOKATLIGHT);
+  private static final Pattern formatterPattern = Pattern.compile("&([0-9a-flmnor])");
+
+  public Map<DataId, DataEntry> dataList = new HashMap<>();
 
   public static DataManager getInstance()
   {
     if (null == instance)
-      instance = new DataManager();
+    {instance = new DataManager();}
     return instance;
   }
-public void DataManager() {
+
+  public DataManager()
+  {
     instance = this;
-}
+    dataList.put(DataId.COMPASS, new DataEntry("Kompass", "Zeigt dir die Himmelsrichtung in die du blickst.", "%cp", "CP"));
+    dataList.put(DataId.EXP, new DataEntry("Exp", "Deine Erfahrungspunkte.", "%xp", "0"));
+    dataList.put(DataId.FPS, new DataEntry("FPS", "Frames pro Sekunde.", "%fs", "0"));
+    dataList.put(DataId.HEALLEVEL, new DataEntry("Gesundheit", "Dein Gesundheitslevel.", "%hl", "0"));
+    dataList.put(DataId.HEALMAX, new DataEntry("Max. Gesundheit", "Dein maximales Gesundheitslevel.", "%hm", "0"));
+    dataList.put(DataId.HEALBAR, new DataEntry("Gesundheits Herzen", "Zeigt dir deine Gesundheit als Herzen an.", "%hb", "0"));
+    dataList.put(DataId.HUNGERLEVEL, new DataEntry("Hunger", "Zeigt dir deine Nahrungspunkte an.", "%fl", "0"));
+    dataList.put(DataId.HUNGERMAX, new DataEntry("Max. Hunger", "Deine maximalen Nahrungspunkte.", "%fm", "0"));
+    dataList.put(DataId.HUNGERBAR, new DataEntry("Hunger", "Zeigt dir deine Hunger als Fleischkeulen an.", "%fb", "0"));
+    dataList.put(DataId.LOOKATBLOCK, new DataEntry("Block", "Zeigt dir den Typ des Blockes an, auf den du schaust.", "%lb", "0"));
+    dataList.put(DataId.LOOKATLIGHT, new DataEntry("Light", "Zeigt dir den Helligkeitswert an, von dem Block auf den du schaust.", "%ll", "0"));
+
+  }
 
   /**
    * process a String with placeholders and returns a List of Styles Texts
    *
-   * @param inputText String containing magic patterns to be replaced with the current values
+   * @param patternText String containing magic patterns to be replaced with the current values
    * @return List<Text>
    */
-  public List<Text> processPatterns(String inputText)
+  public List<Text> processPatterns(String patternText)
   {
+    String inputText = formatterPattern.matcher(patternText).replaceAll("§$1");
     List<Text> result = new ArrayList<>();
-    Text currentText = Text.empty();
-    Style style = Style.EMPTY;
-
+    String currentText = "";
     int index = 0;
     while (index < inputText.length())
     {
       char currentChar = inputText.charAt(index);
-
-      if (currentChar == '&' && index + 1 < inputText.length() && inputText.charAt(index + 1) == '&')
+      if (currentChar == '%' && index + 1 < inputText.length() && inputText.charAt(index + 1) == '%')
       {
-        currentText = (Text) concat(currentText, Text.literal("&").setStyle(style));
+        currentText += "%";
         index += 2;
-      }
-      else if (currentChar == '%' && index + 1 < inputText.length() && inputText.charAt(index + 1) == '%')
-      {
-        currentText = (Text) concat(currentText, Text.literal("%").setStyle(style));
-        index += 2;
-      }
-      else if (currentChar == '&' && index + 1 < inputText.length())
-      {
-        char nextChar = inputText.charAt(index + 1);
-        if ("0123456789abcdef".indexOf(nextChar) != -1)
-        {
-          style = style.withColor(Formatting.byCode(nextChar));
-          index += 2;
-        }
-        else if ("lmnor".indexOf(nextChar) != -1)
-        {
-          style = switch (nextChar)
-              {
-                case 'r' -> Style.EMPTY;
-                case 'l' -> style.withBold(true);
-                case 'm' -> style.withStrikethrough(true);
-                case 'n' -> style.withUnderline(true);
-                case 'o' -> style.withItalic(true);
-                default -> style;
-              };
-        }
-        else
-        {
-          currentText = (Text) concat(currentText, Text.literal("&").setStyle(style));
-          index++;
-        }
       }
       else if (currentChar == '%' && index + 2 < inputText.length() &&
           Character.isLetter(inputText.charAt(index + 1)) &&
           Character.isLetter(inputText.charAt(index + 2)))
       {
-        result.add(currentText);
-        result.add(resolvePattern(inputText.substring(index, index + 3), style));
-        currentText = Text.empty();
+        result.add(Text.literal(currentText));
+        result.add(resolvePattern(inputText.substring(index, index + 3)));
+        currentText = "";
         index += 3;
       }
       else
       {
-        currentText = (Text) concat(currentText, Text.literal(String.valueOf(currentChar)).setStyle(style));
+        currentText += String.valueOf(currentChar);
         index++;
       }
     }
-    // add the remaining Text to the List
-    result.add(currentText);
+    result.add(Text.literal(currentText));
     return result;
   }
 
-  private Text resolvePattern(String pattern, Style style)
+  private Text resolvePattern(String pattern)
   {
-    for (DataEntry entry : this.DataList)
+    for (Map.Entry<DataId, DataEntry> mapEntry : dataList.entrySet())
     {
+      DataEntry entry = mapEntry.getValue();
       if (entry.pattern().equals(pattern))
       {
-        return Text.literal(entry.value()).setStyle(style);
+        return Text.literal(entry.value());
       }
     }
-    return Text.literal(pattern).setStyle(style);
+    return Text.literal(pattern);
   }
 
   // update only all values, that can change every frame, for better performance
   public void tick()
   {
+    Entity entity = this.client.getCameraEntity();
+    BlockPos blockPos = entity.getBlockPos();
+    HitResult hitResult = entity.raycast(20.0, 0.0f, false);
     // fps formated to 3 char length, so text is not flickering around 99-100 fps
-    FPS = FPS.setValue(String.format(Locale.ROOT, "%3d", client.getCurrentFps()));
+    dataList.put(DataId.FPS, dataList.get(DataId.FPS).setValue(String.format(Locale.ROOT, "%3d", client.getCurrentFps())));
     String compassText = "...N...ne...E...es...S...sw...W...wn";
     String compass;
     int compassIndex = (int) ((wrapDegrees(this.client.getCameraEntity().getYaw()) + 180.) / 360.0 * compassText.length()) % compassText.length();
     compass = (compassText.substring(compassIndex) + compassText.substring(0, compassIndex)).substring(0, 7);
-    COMPASS = COMPASS.setValue(compass);
-
-
+    dataList.put(DataId.COMPASS, dataList.get(DataId.COMPASS).setValue(compass));
+    if (hitResult.getType() == HitResult.Type.BLOCK)
+    {
+      if (!((WorldChunk)this.client.world.getChunk(((BlockHitResult)hitResult).getBlockPos())).isEmpty())
+      {
+        dataList.put(DataId.LOOKATBLOCK, dataList.get(DataId.LOOKATBLOCK).setValue(String.valueOf(Registries.BLOCK.getId(this.client.world.getBlockState(((BlockHitResult)hitResult).getBlockPos()).getBlock()))));
+        dataList.put(DataId.LOOKATLIGHT, dataList.get(DataId.LOOKATLIGHT).setValue(String.valueOf(this.client.world.getChunkManager().getLightingProvider().getLight(((BlockHitResult)hitResult).getBlockPos(), 0))));
+      }
+    }
   }
 
   public List<Text> getDescriptionList()
@@ -181,27 +155,34 @@ public void DataManager() {
     result.add(Text.literal("§6§lPattern-List:"));
     result.add(Text.literal("§7§oThis is a list of all available patterns/placeholders you can use to customize the top and bottom bars display according to your needs. These will be automatically replaced by the corresponding values in the game."));
     String colorPatterns = "";
-    for ( String colorname : Formatting.getNames(true,false))
+    for (String colorname : Formatting.getNames(true, false))
     {
-      if('r' != Formatting.byName(colorname).getCode())
-        colorPatterns += "§e§l&" + Formatting.byName(colorname).getCode() + "§f " + Formatting.byName(colorname) +colorname+ Formatting.RESET + "" + Formatting.WHITE + ", ";
+      if ('r' != Formatting.byName(colorname).getCode())
+      {colorPatterns += "§e§l&" + Formatting.byName(colorname).getCode() + "§f " + Formatting.byName(colorname) + colorname + Formatting.RESET + "" + Formatting.WHITE + ", ";}
     }
-    colorPatterns = colorPatterns.substring(0, colorPatterns.length() -2);
+    colorPatterns = colorPatterns.substring(0, colorPatterns.length() - 2);
     result.add(Text.literal("§f§lFormatting patterns: §r"
-        +"§e§l&r §fRESET (resets all previous formatting), "
-        +"§e§l&l §f§lBOLD§r§f, "
-        +"§e§l&o §f§oITALIC§r§f, "
-        +"§e§l&m §f§mSTRIKETHROUGH§r§f, "
-        +"§e§l&n §f§nUNDERLINE§r§f, "
+        + "§e§l&r §fRESET (resets all previous formatting), "
+        + "§e§l&l §f§lBOLD§r§f, "
+        + "§e§l&o §f§oITALIC§r§f, "
+        + "§e§l&m §f§mSTRIKETHROUGH§r§f, "
+        + "§e§l&n §f§nUNDERLINE§r§f, "
     ));
     result.add(Text.literal("§f§lColor patterns: §r" + colorPatterns));
     result.add(Text.literal("§f§lData patterns: §r"));
-    for (DataEntry entry : DataList)
+    for (Map.Entry<DataId, DataEntry> mapEntry : dataList.entrySet())
     {
-      result.add(Text.literal("§e§l"+entry.pattern()+"§r §f"+entry.name+" §7§o("+entry.description()+")"));
+      DataEntry entry = mapEntry.getValue();
+      result.add(Text.literal("§e§l" + entry.pattern() + "§r §f" + entry.name + " §7§o(" + entry.description() + ")"));
     }
     return result;
   }
+
+  public enum DataId
+  {
+    COMPASS, EXP, FPS, HEALLEVEL, HEALMAX, HEALBAR, HEARTS, HUNGERLEVEL, HUNGERMAX, HUNGERBAR, LOOKATBLOCK, LOOKATLIGHT, MCTIME, MONEY, POSX, POSY, POSz, SERVER, TIME, TOOLDEMAGE, TOOLMAXDEMAGE, WORLD
+  }
+
   public record DataEntry(String name, String description, String pattern, String value)
   {
     public DataEntry setValue(String newValue)
