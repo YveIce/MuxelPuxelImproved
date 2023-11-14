@@ -24,216 +24,73 @@
 
 package click.isreal.mpi.mixin;
 
-import click.isreal.mpi.Mpi;
 import click.isreal.mpi.client.BarHud;
-import click.isreal.mpi.client.DataManager;
 import click.isreal.mpi.client.mpiClient;
 import click.isreal.mpi.config.Config;
 import click.isreal.mpi.domain.MixelWorld;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Ordering;
-import com.ibm.icu.text.SimpleDateFormat;
-import com.ibm.icu.util.Calendar;
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
-import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.render.item.ItemRenderer;
-import net.minecraft.client.texture.Sprite;
-import net.minecraft.client.texture.StatusEffectSpriteManager;
-import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.scoreboard.ScoreboardObjective;
-import net.minecraft.text.Text;
-import net.minecraft.text.TextColor;
-import net.minecraft.util.Colors;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.math.MathHelper;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyConstant;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import java.util.Collection;
-import java.util.List;
 
 
 @Environment(EnvType.CLIENT)
 @Mixin(InGameHud.class)
 public abstract class InGameHudMixin
 {
+  final Config config = Config.getInstance();
   @Shadow
   @Final
   private MinecraftClient client;
-
   private BarHud barHud;
 
-  @Inject(method = "<init>", at=@At("RETURN"))
+  @Inject(method = "<init>", at = @At("RETURN"))
   private void initInject(MinecraftClient client, ItemRenderer itemRenderer, CallbackInfo ci)
   {
     this.barHud = new BarHud(client);
   }
-  @Inject(method = "render", at =@At(value = "INVOKE",target = "Lnet/minecraft/client/gui/hud/InGameHud;renderCrosshair(Lnet/minecraft/client/gui/DrawContext;)V"))
-  public void renderInject(DrawContext context, float tickDelta, CallbackInfo ci)
-  {
-    this.barHud.render(context);
-  }
-  @Inject(method = "renderStatusEffectOverlay", at = @At("HEAD"), cancellable = true)
-  public void renderStatusEffectOverlayInject(DrawContext context, final CallbackInfo ci)
+
+  @Inject(method = "renderHotbar", at = @At(value = "HEAD"))
+  public void renderHotbarInject(float tickDelta, DrawContext context, CallbackInfo ci)
   {
     if (mpiClient.getInstance().isMixelPixel())
     {
-      /*
-      Collection<StatusEffectInstance> collection = this.client.player.getStatusEffects();
-      if (!collection.isEmpty())
-      {
-        RenderSystem.enableBlend();
-        int i = 0;
-        int j = 0;
-        StatusEffectSpriteManager statusEffectSpriteManager = this.client.getStatusEffectSpriteManager();
-        List<Runnable> list = Lists.newArrayListWithExpectedSize(collection.size());
-        RenderSystem.setShaderTexture(0, HandledScreen.BACKGROUND_TEXTURE);
-
-        for (StatusEffectInstance statusEffectInstance : Ordering.natural().reverse().sortedCopy(collection))
-        {
-          StatusEffect statusEffect = statusEffectInstance.getEffectType();
-          if (statusEffectInstance.shouldShowIcon())
-          {
-            int k = this.scaledWidth;
-            int l = 1;
-            if (this.client.isDemo())
-            {
-              l += 15;
-            }
-            if (mpiClient.getInstance().isMixelPixel())
-            {
-              l += 10;
-            }
-
-            if (statusEffect.isBeneficial())
-            {
-              ++i;
-              k -= 25 * i;
-            }
-            else
-            {
-              ++j;
-              k -= 25 * j;
-              l += 26;
-            }
-
-            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-            float f;
-            if (statusEffectInstance.isAmbient())
-            {
-              f = 1.0F;
-              context.drawTexture(HandledScreen.BACKGROUND_TEXTURE, k, l, 165, 166, 24, 24);
-            }
-            else
-            {
-              context.drawTexture(HandledScreen.BACKGROUND_TEXTURE, k, l, 141, 166, 24, 24);
-              if (statusEffectInstance.getDuration() <= 200)
-              {
-                int m = 10 - statusEffectInstance.getDuration() / 20;
-                f = MathHelper.clamp((float) statusEffectInstance.getDuration() / 10.0F / 5.0F * 0.5F, 0.0F, 0.5F) + MathHelper.cos((float) statusEffectInstance.getDuration() * 3.1415927F / 5.0F) * MathHelper.clamp((float) m / 10.0F * 0.25F, 0.0F, 0.25F);
-              }
-              else
-              {
-                f = 1.0F;
-              }
-            }
-
-            Sprite sprite = statusEffectSpriteManager.getSprite(statusEffect);
-            int finalK = k;
-            int finalL = l;
-            list.add(() -> {
-              RenderSystem.setShaderTexture(0, sprite.getAtlasId());
-              RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, f);
-              context.drawSprite(finalK + 3, finalL + 3, 0, 18, 18, sprite);
-            });
-          }
-        }
-
-        list.forEach(Runnable::run);
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-      }
-      if (ci.isCancellable()) ci.cancel();
-    */
+      this.barHud.render(context);
     }
+  }
+
+  /*
+  Shifts down the Status-Effect Symbols, if TopBar is enabled
+   */
+  @ModifyConstant(method = "renderStatusEffectOverlay", constant = @Constant(intValue = 1))
+  private int renderStatusEffectOverlayModL(int l)
+  {
+    if (mpiClient.getInstance().isMixelPixel())
+    {
+      return config.getTopShift() + 1;
+    }
+    else
+    {return l;}
   }
 
   @Inject(method = {"renderScoreboardSidebar"}, at = {@At("HEAD")}, cancellable = true)
   private void renderScoreboardSidebarInject(DrawContext context, ScoreboardObjective objective, final CallbackInfo callbackInfo)
   {
-
-    if (mpiClient.getInstance().isMixelPixel() && mpiClient.getInstance().getWorld() != MixelWorld.OTHER)
+    if ( mpiClient.getInstance().isMixelPixel() && mpiClient.getInstance().getWorld() != MixelWorld.OTHER)
     {
-
-
-/*
-      final Config config = Config.getInstance();
-      int offsetLeft = 2;
-      int offsetRight = 2;
-      float scale = (float) config.getTopbarScale() / 100.0f;
-      int scaledWidth =  Math.round((float) this.scaledWidth / scale);
-      int scaledHeight = Math.round((float) this.scaledHeight / scale);
-      int lineHeight = this.getTextRenderer().getWrappedLinesHeight("_",1000);
-
-      context.getMatrices().push();
-      context.getMatrices().scale(scale, scale, 0.0f);
-
-      String fps = mpiClient.getInstance().getFPS();
-      String time = new SimpleDateFormat("HH:mm:ss").format(Calendar.getInstance().getTime());
-
-      context.fill(0, 0, scaledWidth, lineHeight + 1, config.getBarTop1Color());
-      this.getTextRenderer().getClass();
-
-      if (config.getFpsShow())
-      {
-        offsetLeft += this.getTextRenderer().getWidth(Formatting.strip(fps + mpiClient.getInstance().strSplitter));
-      }
-
-      if (config.getTimeShow())
-      {
-        offsetRight += this.getTextRenderer().getWidth(" | 00:00:00");
-      }
-
-      context.drawText(this.getTextRenderer(), mpiClient.getInstance().strTopLeft, offsetLeft, 1, 0xfff0f0f0, false);
-      int x = scaledWidth - this.getTextRenderer().getWidth(Formatting.strip(mpiClient.getInstance().strTopRight)) - offsetRight;
-      context.drawText(this.getTextRenderer(), mpiClient.getInstance().strTopRight, x, 1, 0xfff0f0f0, false);
-      if (config.getFpsShow())
-      {
-        context.drawText(this.getTextRenderer(), fps + mpiClient.getInstance().strSplitter, 2, 1, config.getFpsColor(), false);
-      }
-      if (config.getTimeShow())
-      {
-        context.drawText(this.getTextRenderer(), mpiClient.getInstance().strSplitter + Formatting.RESET + time, scaledWidth - offsetRight, 1, config.getTimeColor(), false);
-      }
-
-      context.drawText(this.getTextRenderer(), mpiClient.getInstance().getScoreboardData().cbPlotName(),
-          scaledWidth - this.getTextRenderer().getWidth(Formatting.strip(mpiClient.getInstance().getScoreboardData().cbPlotName())) - 2,
-          scaledHeight - 19, 0xfff0f0f0, false);
-
-      context.drawText(this.getTextRenderer(), mpiClient.getInstance().getScoreboardData().cbPlotOwner(),
-          scaledWidth - this.getTextRenderer().getWidth(Formatting.strip(mpiClient.getInstance().getScoreboardData().cbPlotOwner())) - 2,
-          scaledHeight - 10, 0xfff0f0f0, false);
-
-
-      DataManager.getInstance().tick();
-      Text compass = Text.of(DataManager.COMPASS.value());
-      context.drawText(this.getTextRenderer(),compass,200,30, Colors.RED,true);
-
-      context.getMatrices().pop();
-*/
-      if (callbackInfo.isCancellable()) callbackInfo.cancel();
+      if (callbackInfo.isCancellable() && !config.getRenderScoreboard() ) callbackInfo.cancel();
     }
-
   }
 }
 

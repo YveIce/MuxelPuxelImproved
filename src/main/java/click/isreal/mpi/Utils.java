@@ -24,6 +24,12 @@
 
 package click.isreal.mpi;
 
+import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.client.render.*;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.util.math.ColorHelper;
+import org.joml.Matrix4f;
+
 import java.util.Random;
 
 public final class Utils
@@ -35,6 +41,26 @@ public final class Utils
     Random rand = new Random();
     int randIndex = rand.nextInt(text.length);
     return text[randIndex];
+  }
+
+  // renders a color quad on texture quad layer
+  // explain: on default render system, color quads are always above texture quads, ignoring z-order. don't know why mojang did this bullshit.
+  public static void drawColorRect(MatrixStack matrices, int x, int y, int width, int height, int color)
+  {
+    float alpha = (float) ColorHelper.Argb.getAlpha(color) / 255.0f;
+    float red = (float) ColorHelper.Argb.getRed(color) / 255.0f;
+    float green = (float) ColorHelper.Argb.getGreen(color) / 255.0f;
+    float blue = (float) ColorHelper.Argb.getBlue(color) / 255.0f;
+
+    RenderSystem.setShader(GameRenderer::getPositionColorProgram);
+    Matrix4f matrix4f = matrices.peek().getPositionMatrix();
+    BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
+    bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
+    bufferBuilder.vertex(matrix4f, x, y, 0).color(red, green, blue, alpha).next();
+    bufferBuilder.vertex(matrix4f, x, y + height, 0).color(red, green, blue, alpha).next();
+    bufferBuilder.vertex(matrix4f, x + width, y + height, 0).color(red, green, blue, alpha).next();
+    bufferBuilder.vertex(matrix4f, x + width, y, 0).color(red, green, blue, alpha).next();
+    BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
   }
 
 }

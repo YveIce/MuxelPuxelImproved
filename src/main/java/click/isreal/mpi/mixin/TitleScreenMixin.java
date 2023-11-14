@@ -28,9 +28,11 @@ import click.isreal.mpi.client.MPUpdatesScrapper;
 import click.isreal.mpi.client.MpiScrollableTextWidget;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.SplashTextRenderer;
 import net.minecraft.client.gui.screen.TitleScreen;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -47,6 +49,10 @@ public abstract class TitleScreenMixin extends Screen
 
   @Shadow
   public abstract void tick();
+
+  @Shadow
+  @Nullable
+  private SplashTextRenderer splashText;
 
   private void initUpdatebox()
   {
@@ -78,6 +84,8 @@ public abstract class TitleScreenMixin extends Screen
     {
       initUpdatebox();
     }
+    // disable ugly splashtext for now
+    this.splashText = null;
 
   }
 }

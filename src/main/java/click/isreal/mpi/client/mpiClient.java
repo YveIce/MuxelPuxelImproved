@@ -39,14 +39,9 @@ import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
-import net.minecraft.resource.InputSupplier;
-import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 import org.lwjgl.glfw.GLFW;
-
-import java.io.InputStream;
 
 @Environment(EnvType.CLIENT)
 public class mpiClient implements ClientModInitializer
@@ -73,6 +68,11 @@ public class mpiClient implements ClientModInitializer
   public static mpiClient getInstance()
   {
     return instance;
+  }
+
+  public DataManager getDataManager()
+  {
+    return dataManager;
   }
 
   @Deprecated
@@ -139,7 +139,7 @@ public class mpiClient implements ClientModInitializer
 
   public boolean isMixelPixel()
   {
-    return _isMixel;
+    return true; //_isMixel;
   }
 
   public String buildName(MixelWorld world)
@@ -150,22 +150,6 @@ public class mpiClient implements ClientModInitializer
     if (world.getType() == MixelWorldType.SMALL_CB || world.getType() == MixelWorldType.BIG_CB)
     {name += " " + world.getSubtype();}
     return name;
-  }
-
-  public String getFPS()
-  {
-    if (config.getFpsShow())
-    {
-      String fps = "";
-      fps += this.client.fpsDebugString.split("fps")[0].trim();
-      while (fps.length() < 3)
-      {
-        fps = " " + fps;
-      }
-      fps += " FPS";
-      return fps;
-    }
-    return "";
   }
 
   public void updateTopBar()

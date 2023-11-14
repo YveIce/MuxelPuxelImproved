@@ -24,45 +24,38 @@
 
 package click.isreal.mpi.mixin;
 
-import click.isreal.mpi.client.Shaders;
+import click.isreal.mpi.Utils;
 import click.isreal.mpi.config.Config;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.RotatingCubeMapRenderer;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL13C;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.util.Identifier;
+import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Intrinsic;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(RotatingCubeMapRenderer.class)
-public class RotatingCubeMapRendererMixin
+import static net.minecraft.client.gui.screen.Screen.OPTIONS_BACKGROUND_TEXTURE;
+
+@Mixin(DrawContext.class)
+abstract public class DrawContextMixin
 {
+  @Final
   @Shadow
-  MinecraftClient client;
+  private MatrixStack matrices;
 
-  @Inject(method = "render", at = @At("HEAD"), cancellable = true)
-  public void renderInject(float delta, float alpha, CallbackInfo ci)
+  @Intrinsic // YVE: Methode auch für Abgeleitete Klassen verwenden.
+  @Inject(method = "drawTexture(Lnet/minecraft/util/Identifier;IIFFIIII)V", at = @At("HEAD"), cancellable = true)
+  public void drawTextureInject(Identifier texture, int x, int y, float u, float v, int width, int height, int textureWidth, int textureHeight, CallbackInfo ci)
   {
-    // float f = (float) ((double) delta * this.client.options.getPanoramaSpeed().getValue());
-    switch (Config.getInstance().getTitlescreenTheme())
+    // draw solid color instead of default options-menu texture
+    if (texture.getPath().equals(OPTIONS_BACKGROUND_TEXTURE.getPath()) && Config.getInstance().getSolidBackgroundEnabled())
     {
-      case "magicclouds":
-        Shaders.drawShaderFullscreen(Shaders.shaderMagicclouds);
-        ci.cancel();
-        break;
-      case "space":
-        Shaders.drawShaderFullscreen(Shaders.shaderSpace);
-        ci.cancel();
-        break;
-      case "evilyoungflesh":
-        Shaders.drawShaderFullscreen(Shaders.shaderFlesh);
-        ci.cancel();
-        break;
+      if (ci.isCancellable()) ci.cancel();
+      int color = Config.getInstance().getLoadscreenColor();
+      Utils.drawColorRect(this.matrices, x, y, width, height, color);
     }
-
-    //Shaders.drawShaderFullscreen(Shaders.shaderSpace);
-    //ci.cancel();
   }
 }

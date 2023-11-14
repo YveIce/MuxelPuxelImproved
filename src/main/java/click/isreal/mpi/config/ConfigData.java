@@ -38,10 +38,12 @@ public class ConfigData
   public int timeColor = 0xffff007D;
   public int preventFalseCommands = 0;
   public int loadscreenColor = 0xffff007D;
+  public int solidBackgroundEnabled = 1;
   public int discordEnabled = 1;
   public int breakwarnEnabled = 1;
   public int unsecureServerWarning = 0;
   public int hornAudio = 0;
+  public int renderScoreboard = 0;
   public int barScale = 100;
 
   public int barTop1enabled = 1;

@@ -24,6 +24,7 @@
 
 package click.isreal.mpi;
 
+import click.isreal.mpi.client.DataManager;
 import click.isreal.mpi.config.Config;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
@@ -50,7 +51,6 @@ public class Mpi implements ModInitializer
 
   public static final Logger LOGGER = LogManager.getFormatterLogger("MPI");
   private static Mpi instance;
-  private final Config config = new Config();
   public DecimalFormat moneyformat = new DecimalFormat("###,###,###.00 ⛀", new DecimalFormatSymbols(Locale.GERMANY));
 
   {

@@ -28,6 +28,7 @@ import click.isreal.mpi.client.mpiClient;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.client.MinecraftClient;
 import org.apache.logging.log4j.Level;
 
 import java.io.FileReader;
@@ -42,6 +43,10 @@ public class Config
   private final String configPath = FabricLoader.getInstance().getConfigDir().resolve("MuxelPuxelImproved" + ".json").toString();
   private ConfigData configData = new ConfigData();
 
+  private int lineHeight = 0;
+  private int topShift = 0;
+  private int bottomShift = 0;
+
   public Config()
   {
     instance = this;
@@ -49,8 +54,30 @@ public class Config
     load();
   }
 
+  public void updateShift()
+  {
+    MinecraftClient client = MinecraftClient.getInstance();
+    if (null != client && null != client.textRenderer)
+    {
+      float scale = (float) this.getTopbarScale() / 100.0f;
+      lineHeight = client.textRenderer.getWrappedLinesHeight("_", 1000)+1;
+      int scaledLineHeight = Math.round(lineHeight * scale);
+      topShift = 0;
+      if (getBarTop2enabled()) topShift = scaledLineHeight *2;
+      else if (getBarTop1enabled()) topShift = scaledLineHeight;
+      bottomShift = 0;
+      if (getBarBottom2enabled()) bottomShift = scaledLineHeight *2;
+      else if (getBarBottom1enabled()) bottomShift = scaledLineHeight;
+
+    }
+  }
+
   public static Config getInstance()
   {
+    if (null == instance)
+    {
+      instance = new Config();
+    }
     return instance;
   }
 
@@ -83,6 +110,20 @@ public class Config
     mpiClient.getInstance().updateTopBar();
   }
 
+  public int getLineHeight()
+  {
+    return lineHeight;
+  }
+
+  public int getTopShift()
+  {
+    return topShift;
+  }
+
+  public int getBottomShift()
+  {
+    return bottomShift;
+  }
   public boolean getStreamerMode()
   {
     return configData.streamerMode != 0;
@@ -91,50 +132,6 @@ public class Config
   public void setStreamerMode(boolean streamerMode)
   {
     configData.streamerMode = streamerMode ? 1 : 0;
-    save();
-  }
-
-  public boolean getFpsShow()
-  {
-    return configData.fpsShow != 0;
-  }
-
-  public void setFpsShow(boolean fpsShow)
-  {
-    configData.fpsShow = fpsShow ? 1 : 0;
-    save();
-  }
-
-  public int getFpsColor()
-  {
-    return configData.fpsColor;
-  }
-
-  public void setFpsColor(int fpsColor)
-  {
-    configData.fpsColor = fpsColor;
-    save();
-  }
-
-  public boolean getTimeShow()
-  {
-    return configData.timeShow != 0;
-  }
-
-  public void setTimeShow(boolean timeShow)
-  {
-    configData.timeShow = timeShow ? 1 : 0;
-    save();
-  }
-
-  public int getTimeColor()
-  {
-    return configData.timeColor;
-  }
-
-  public void setTimeColor(int timeColor)
-  {
-    configData.timeColor = timeColor;
     save();
   }
 
@@ -189,6 +186,16 @@ public class Config
     configData.breakwarnEnabled = breakwarnEnabled ? 1 : 0;
     save();
   }
+  public boolean getSolidBackgroundEnabled()
+  {
+    return configData.solidBackgroundEnabled != 0;
+  }
+
+  public void setSolidBackgroundEnabled(boolean solidBackgroundEnabled)
+  {
+    configData.solidBackgroundEnabled = solidBackgroundEnabled ? 1 : 0;
+    save();
+  }
 
   public boolean getUnsecureServerWarning()
   {
@@ -212,6 +219,17 @@ public class Config
     save();
   }
 
+  public boolean getRenderScoreboard()
+  {
+    return configData.renderScoreboard != 0;
+  }
+
+  public void setRenderScoreboard(boolean renderScoreboard)
+  {
+    configData.renderScoreboard = renderScoreboard ? 1 : 0;
+    save();
+  }
+
   public String getTitlescreenTheme()
   {
     return configData.titleScreenTheme;
@@ -232,6 +250,7 @@ public class Config
   {
     configData.barScale = topbarScale;
     save();
+    updateShift();
   }
 
   public boolean getBarTop1enabled()
@@ -243,6 +262,7 @@ public class Config
   {
     configData.barTop1enabled = barTop1enabled ? 1 : 0;
     save();
+    updateShift();
   }
 
   public boolean getBarTop2enabled()
@@ -254,6 +274,7 @@ public class Config
   {
     configData.barTop2enabled = barTop2enabled ? 1 : 0;
     save();
+    updateShift();
   }
 
   public boolean getBarBottom1enabled()
@@ -265,17 +286,19 @@ public class Config
   {
     configData.barBottom1enabled = barBottom1enabled ? 1 : 0;
     save();
+    updateShift();
   }
 
   public boolean getBarBottom2enabled()
   {
-    return configData.barBottom1enabled != 0;
+    return configData.barBottom2enabled != 0;
   }
 
   public void setBarBottom2enabled(boolean barBottom2enabled)
   {
-    configData.barBottom1enabled = barBottom2enabled ? 1 : 0;
+    configData.barBottom2enabled = barBottom2enabled ? 1 : 0;
     save();
+    updateShift();
   }
 
   public int getBarTop1Color()

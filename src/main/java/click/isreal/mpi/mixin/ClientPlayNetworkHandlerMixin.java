@@ -24,23 +24,32 @@
 
 package click.isreal.mpi.mixin;
 
-import click.isreal.mpi.config.Config;
+import click.isreal.mpi.Mpi;
+import click.isreal.mpi.client.DataManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.hud.BossBarHud;
+import net.minecraft.client.network.ClientPlayNetworkHandler;
+import net.minecraft.network.packet.s2c.play.WorldTimeUpdateS2CPacket;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 
 @Environment(EnvType.CLIENT)
-@Mixin(BossBarHud.class)
-public class BossBarHudMixin
+@Mixin(ClientPlayNetworkHandler.class)
+public class ClientPlayNetworkHandlerMixin
 {
-  final Config config = Config.getInstance();
-
-  @ModifyVariable(method = "render", at = @At("STORE"), ordinal = 1)
-  private int renderModY(int y)
+  @Inject(method = "onWorldTimeUpdate", at = @At("RETURN"), cancellable = false)
+  public void onWorldTimeUpdateInject(WorldTimeUpdateS2CPacket packet, CallbackInfo ci)
   {
-    return Math.max(y, config.getTopShift() + 14);
+    // doing it here, so we only update it, when changed => better performance
+    // YVE: mctime is 0-24000 starting at 6:00am, full run is 20min RT
+    long remotetime = packet.getTimeOfDay() % 24000L;
+    if (0 > remotetime) remotetime *= -1L; // server can send negativ values
+    long mctime = (long) ((float)remotetime / 24000.f * 86399.f); // yes i hate this random java math behaive
+    DataManager.getInstance().setTimeMc(LocalTime.ofSecondOfDay(mctime).plusHours(6).format(DateTimeFormatter.ofPattern("HH:mm")));
   }
 }

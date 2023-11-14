@@ -22,25 +22,39 @@
  * SOFTWARE.
  */
 
-package click.isreal.mpi.mixin;
+package click.isreal.mpi.client;
 
-import click.isreal.mpi.config.Config;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.hud.BossBarHud;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
+import click.isreal.mpi.Mpi;
+import net.minecraft.client.resource.metadata.TextureResourceMetadata;
+import net.minecraft.client.texture.NativeImage;
+import net.minecraft.client.texture.ResourceTexture;
+import net.minecraft.resource.ResourceManager;
+import net.minecraft.util.Identifier;
 
-@Environment(EnvType.CLIENT)
-@Mixin(BossBarHud.class)
-public class BossBarHudMixin
+import java.io.IOException;
+import java.io.InputStream;
+
+public class SplashLogoTexture extends ResourceTexture
 {
-  final Config config = Config.getInstance();
+  public static final Identifier SPLASHLOGO = new Identifier("mpi", "textures/splash/logo.png");
 
-  @ModifyVariable(method = "render", at = @At("STORE"), ordinal = 1)
-  private int renderModY(int y)
+  public SplashLogoTexture()
   {
-    return Math.max(y, config.getTopShift() + 14);
+    super(SPLASHLOGO);
+  }
+
+  @Override
+  protected TextureData loadTextureData(ResourceManager resourceManager)
+  {
+    TextureData data;
+    try (InputStream fileStream = Mpi.class.getResourceAsStream("/assets/mpi/textures/splash/logo.png"))
+    {
+      data = new TextureData(new TextureResourceMetadata(true, true), NativeImage.read(fileStream));
+    }
+    catch (IOException exception)
+    {
+      return new TextureData(exception);
+    }
+    return data;
   }
 }

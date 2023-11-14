@@ -18,7 +18,13 @@
     "UnsecureServerToastMixin",
     "SoundSystemMixin",
     "TitleScreenMixin",
-    "RotatingCubeMapRendererMixin"
+    "RotatingCubeMapRendererMixin",
+    "ClientPlayerEntityMixin",
+    "ClientPlayNetworkHandlerMixin",
+    "LogoDrawerMixin",
+    "ScreenMixin",
+    "CreateWorldScreenMixin",
+    "DrawContextMixin"
   ],
   "injectors": {
     "defaultRequire": 1

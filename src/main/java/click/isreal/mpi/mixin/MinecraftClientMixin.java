@@ -26,16 +26,20 @@ package click.isreal.mpi.mixin;
 
 import click.isreal.mpi.Utils;
 import click.isreal.mpi.client.mpiClient;
+import click.isreal.mpi.config.Config;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.RunArgs;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.client.realms.RealmsClient;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.MiningToolItem;
 import net.minecraft.item.RangedWeaponItem;
 import net.minecraft.item.ToolItem;
+import net.minecraft.resource.ResourceReload;
 import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -107,6 +111,11 @@ public abstract class MinecraftClientMixin
   @Shadow
   public abstract ClientPlayNetworkHandler getNetworkHandler();
 
+  @Inject(method = "onInitFinished", at = @At("HEAD"))
+  private void onInitFinishedInject(RealmsClient realms, ResourceReload reload, RunArgs.QuickPlay quickPlay, CallbackInfo ci)
+  {
+    Config.getInstance().updateShift();
+  }
   private boolean warnBreak(ItemStack itemStack)
   {
     if (itemStack.isEmpty() || !itemStack.isDamageable() || 0 == itemStack.getDamage() || 10 < (itemStack.getMaxDamage() - itemStack.getDamage()))
